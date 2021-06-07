@@ -2,6 +2,7 @@
 
 useful scripts for the lf file manager.
 
+* [installation](#installation)
 * [lfrun, lflast](#lfrun-lflast)
 * [lfpreviewer, lfcleaner](#lfpreviewer-lfcleaner)
 * [lfmount](#lfmount)
@@ -9,6 +10,16 @@ useful scripts for the lf file manager.
 * [lftpw](#lftpw)
 * [lfselect](#lfselect)
 * [lfreload](#lfreload)
+
+## installation
+
+there is an AUR package for archlinux users:
+
+```
+paru -S lfutils-git
+```
+
+or you can put these scripts somewhere in your $PATH.
 
 ## lfrun, lflast
 
