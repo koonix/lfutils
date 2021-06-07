@@ -2,33 +2,39 @@
 
 useful scripts for the lf file manager.
 
-## lfrun
+* [lfrun, lflast](#lfrun-lflast)
+* [lfpreviewer, lfcleaner](#lfpreviewer-lfcleaner)
+* [lfmount](#lfmount)
+* [lfsxiv](#lfsxiv)
+* [lftpw](#lftpw)
+* [lfselect](#lfselect)
+* [lfreload](#lfreload)
 
-wrapper script for running lf.
+## lfrun, lflast
+
+`lfrun` is a wrapper script for running lf, which
 initializes lflast and ueberzug for image previews.
+
+`lflast` prints the last directory the last instance of lf was in.
+
+put this in your .bashrc or .zshrc:
+
+```
+lf() {
+    lfrun "$@"
+    cd "$(lflast "$@")"
+}
+```
 
 ## lfpreviewer, lfcleaner
 
-previewer and cleaner script for lf's file previews.
+file previewer and cleaner scripts.
 
 add these lines to your lfrc:
 
 ```
 set previewer lfpreviewer
 set cleaner lfcleaner
-```
-
-## lflast
-
-prints the last directory the last instance of lf was in.
-
-put this in your .bashrc or .zshrc:
-
-```
-lf() {
-    command lfrun "$@"
-    cd "$(lflast "$@")"
-}
 ```
 
 ## lfmount
