@@ -1,0 +1,6 @@
+#!/bin/sh
+# print the last directory lf was open in,
+# then remove the lastdir file.
+ldglobal="${XDG_RUNTIME_DIR:-/tmp}/lf/lastdir"
+cat "$ldglobal"
+rm -f "$ldglobal"

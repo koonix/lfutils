@@ -1,0 +1,72 @@
+#!/bin/sh
+# mount and unmount archives with lf. (read-only.)
+# requires archivemount. duuuuuh.
+# usage:
+# mounting: $ lfmount $id $f
+# unmounting: $ lfmount -u $id
+
+case "$1" in
+    -u) shift; unmount=true ;;
+    -p) shift; password_arg='-o password' ;;
+esac
+
+lfecho () {
+    lf -remote "send $id echo '$*'"
+    return 0
+}
+
+id="$1"
+tmp="${XDG_RUNTIME_DIR:-/tmp}/lf/mount"
+
+# this block handles unmounting.
+if [ "$unmount" = true ]; then
+    ! base="$(pwd | grep -Eo "^$tmp/archive-[0-9]{6}")" &&
+        lfecho not in an archive. && exit 1
+    source="$(cat "$base/source")"
+    cd "$base"
+    lfselect "$id" "$source"
+    sleep 0.1
+    ! fusermount -u "$base/mount"/*/ &&
+        lfecho unmount failed. &&
+        exit 1
+    # safely remove files and directories one by one.
+    rmdir "$base/mount"/*/
+    rm "$base/mount/press-uu-to-unmount"
+    rmdir "$base/mount"
+    rm "$base/source"
+    rmdir "$base" || lfecho failed cleaning the mount directory.
+    exit
+fi
+
+ar="$2"
+
+# check if the archive is already mounted
+# and go there if it is.
+for dir in "$tmp"/*; do
+    [ ! -d "$dir" ] && continue
+    if [ "$ar" = "$(cat "$dir/source")" ]; then
+        lfecho already mounted.
+        lfselect "$id" "$dir/mount"/*/
+        exit
+    fi
+done
+
+rand=archive-$(shuf -n1 -i100000-999999)
+mnt="$tmp/$rand/mount/$(basename "$ar")"
+mkdir -p "$mnt"
+touch "$tmp/$rand/mount/press-uu-to-unmount"
+
+msg="$(archivemount -o readonly $password_arg "$ar" "$mnt" 2>&1)"
+
+if [ "$(ls -A "$mnt" | wc -l)" -le 0 ]; then
+    fusermount -u "$mnt"
+    rm -rf "$tmp/$rand"
+    lfecho mount failed: "$msg"
+    exit 1
+fi
+
+echo "$ar" > "$tmp/$rand/source"
+
+lfselect "$id" "$mnt"
+lf -remote "send $id open"
+lfreload -f "$id"

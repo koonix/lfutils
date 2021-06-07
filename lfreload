@@ -1,0 +1,7 @@
+#!/bin/sh
+# usage: lfreload [-f] <lf's id>
+# reload modified files and dirs in lf.
+# with -f, flushes the cache and reloads all files and directories.
+cmd=load
+[ "$1" = -f ] && shift && cmd=reload
+lf -remote "send $1 $cmd"

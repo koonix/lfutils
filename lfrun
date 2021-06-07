@@ -1,0 +1,64 @@
+#!/bin/sh
+# run lf with support for
+# ueberzug image previews and lflast.
+
+# config
+lftmp="${XDG_RUNTIME_DIR:-/tmp}/lf"
+fifo="$lftmp/fifo"
+# last-dir
+lddir="$lftmp/lastdirlocal"
+ldglobal="$lftmp/lastdir"
+
+set -e
+
+main ()
+{
+    case "$1" in
+        -remote|-doc|-version|-server)
+            lf "$@"
+            return
+        ;;
+    esac
+
+    trap cleanup EXIT HUP
+    mkdir -p "$fifo" "$lddir"
+    is_in_graphical_env && command -v ueberzug >/dev/null && ueberzug_init
+    lf_run "$@"
+}
+
+lf_run ()
+{
+    ldlocal="$(mktemp "$lddir/XXXXXX")"
+    lf -last-dir-path="$ldlocal" "$@" 3>&-
+
+    if [ ! -r "$ldlocal" ] || [ -z "$(cat "$ldlocal")" ]
+    then
+        rm -f "$ldglobal"
+        return
+    fi
+
+    mv "$ldlocal" "$ldglobal" >/dev/null 2>&1
+}
+
+ueberzug_init ()
+{
+    export FIFO_UEBERZUG="$fifo/ueberzug-$$"
+    mkfifo "$FIFO_UEBERZUG"
+    ueberzug layer -s <"$FIFO_UEBERZUG" -p bash &
+    exec 3>"$FIFO_UEBERZUG"
+}
+
+is_in_graphical_env ()
+{
+    [ -n "$DISPLAY" ] && [ -z "$SSH_CLIENT" ] && [ -z "$SSH_TTY" ] && return 0
+    return 1
+}
+
+cleanup ()
+{
+    exec 3>&-
+    rm -f "$FIFO_UEBERZUG" "$ldlocal"
+}
+
+main "$@"
+exit

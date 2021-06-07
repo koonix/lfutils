@@ -1,0 +1,73 @@
+#!/bin/sh
+# toggle lf's preview and re-adjust ratios.
+# usage:   $ lftp $id <no-preview-ratios> <preview-ratios>
+# example: $ lftp 123 1 2:1
+
+# config
+lftmp="${XDG_RUNTIME_DIR:-/tmp}/lf"
+preview_cache="$lftmp/togglepreview"
+fifo_dir="$lftmp/fifo"
+
+main ()
+{
+    [ -z "$*" ] && exit 1
+    id="$1"
+    npr="$2" # no preview ratios
+    pr="$3" # preview ratios
+    status_file="$preview_cache/$id"
+    toggle_preview
+}
+
+toggle_preview ()
+{
+    if  is_preview_on
+    then
+        set_preview_off
+    else
+        set_preview_on
+    fi
+}
+
+is_preview_on ()
+{
+    test -f "$status_file"
+}
+
+set_preview_on ()
+{
+    lf -remote "
+        send $id set ratios $pr
+        send $id set preview
+        send $id load
+    "
+    mkfile "$status_file"
+}
+
+set_preview_off ()
+{
+    lf -remote "
+        send $id set nopreview
+        send $id set ratios $npr
+    "
+    rm "$status_file"
+    sleep 0.1
+    cleanup_preview
+}
+
+cleanup_preview ()
+{
+    find "$fifo_dir" -type p |
+        while IFS= read -r fifo; do
+            export FIFO_UEBERZUG="$fifo"
+            lfcleaner
+        done
+}
+
+mkfile ()
+{
+    mkdir  "$(dirname "$1")"
+    touch "$1"
+}
+
+main "$@"
+exit

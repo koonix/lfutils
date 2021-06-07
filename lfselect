@@ -1,0 +1,31 @@
+#!/bin/bash
+# read filenames from stdin/args and selects them in lf.
+
+id=$1
+[ -n "$2" ] && list="$2" || list="$(cat)"
+list="$(printf '%s\n' "$list" | sed 's/"/\\"/g')"
+
+# if only one file is given, put the cursor on it, don't select.
+if [ "$(printf '%s\n' "$list" | wc -l)" -eq 1 ]; then
+    lf -remote "send $id select \"$list\""
+    exit
+fi
+
+cmd=
+count=0
+
+# build command line to select files and send
+# to lf, 15 files at a time.
+# sending all the files at once instead of only 15
+# can crash lf.
+while IFS= read -r file; do
+    ((count++))
+    cmd="${cmd}select<space>\"$file\";toggle;"
+    if [ $count -gt 15 ]; then
+        lf -remote "send $id push :$cmd<enter>"
+        count=0;
+        cmd=
+    fi
+done <<< "$(printf "%s\n" "$list" | sed 's/ /<space>/g')"
+
+[ -n "$cmd" ] && lf -remote "send $id push :$cmd<enter>"

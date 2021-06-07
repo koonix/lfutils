@@ -1,0 +1,29 @@
+#!/bin/sh
+# open images with sxiv from lf.
+
+# config
+regex='.*\.(jpe?g|png|gif|bmp|ico|svg|webp)$'
+
+id="$1" # lf's id
+img="$2" # the selected image
+
+if ! command -v sxiv >/dev/null; then
+    echo lfsxiv requires sxiv image viewer. >&2
+    exit 1
+fi
+
+# cd to where the images are
+cd "$(dirname "$img")" || exit 1
+
+# make a list of all images in that directory
+list="$(find -L -mindepth 1 -maxdepth 1 -type f -regextype egrep -iregex "$regex" -printf '%f\n')"
+
+# find the number of the selected image amongst the list
+num="$(printf '%s\n' "$list" | awk -v i="$(basename "$img")" '$0==i{print NR}')"
+
+# open them with sxiv
+sel="$(printf '%s\n' "$list" | sxiv -aion$num)"
+
+# select images that are selected in sxiv, in lf
+[ -z "$sel" ] && exit
+echo "$sel" | lfselect $id

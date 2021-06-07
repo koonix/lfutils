@@ -1,0 +1,127 @@
+#!/bin/bash
+# lf's file previewer script.
+
+# config
+cachedir="${XDG_RUNTIME_DIR:-/tmp}/lf/thumbnails"
+
+# args
+f="$1" # file
+w="$2" # width of preview window
+h="$3" # height of preview window
+x="$4" # x position of preview window
+y="$5" # y position of preview window
+
+main()
+{
+    [ -z "$1" ] && echo lf previewer script. && exit 1
+
+    mkdir -p "$cache"
+    thumbnail="$cache/thumbnail.$(uid "$f")"
+
+    twoext="$(echo "$f" | tr '[:upper:]' '[:lower:]' | rev | cut -d. -f1-2 | rev)"
+    ext="$(echo "$f" | tr '[:upper:]' '[:lower:]' | rev | cut -d. -f1 | rev)"
+
+    case "$twoext" in
+        tar.gz|tar.xz|tar.bz|tar.bz2|tar.z|tar.lzo|tar.lz|tar.7z|tar.zst)
+            run atool -l "$f"; return ;;
+    esac
+
+    case "$ext" in
+        [1-8])
+            if head "$f" | grep -q '^\.TH'; then
+                man "$f"
+                return
+            fi
+            ;;
+    esac
+
+    case "$ext" in
+
+        tar|tgz|tbz|tbz2|tz|tzo|tlz|txz|t7z|tzst|zip|jar|war|rar|lha|lzh|7z|\
+        ace|a|arj|arc|rpm|deb|cab|zst|cpio)
+            run atool -l "$f"; return ;;
+
+            o) run -p binutils nm "$f" | less ;;
+          iso) run -p libcdio iso-info --no-header -l "$f" ;;
+          doc) run catdoc "$f" ;;
+         docx) run docx2txt "$f" - ;;
+          csv) run bat -f --number --paging=never "$f" | sed s/,/\\n/g ;;
+        torrent) run -p transmission-cli transmission-show "$f" ;;
+        odt|ods|odp|sxw) run odt2txt "$f" ;;
+
+        wav|mp3|flac|m4a|wma|ape|ac3|og[agx]|spx|opus|as[fx]|flac)
+            run mediainfo "$f" ;;
+
+        pdf)
+            [ -f "$thumbnail.jpg" ] || pdftoppm -jpeg -f 1 -singlefile "$f" "$thumbnail"
+            image "$thumbnail.jpg" ;;
+
+        svg)
+            [ -f "$thumbnail.jpg" ] || convert "$f" "$thumbnail.jpg"
+            image "$thumbnail.jpg" ;;
+
+        epub)
+            [ -f "$thumbnail" ] || epub-thumbnailer "$f" "$thumbnail" 1024
+            image "$thumbnail" ;;
+
+        bmp|gif|jpg|jpeg|jpe|png|xpm|webp|dng)
+            image "$f" ;;
+
+        avi|mp4|wmv|dat|3gp|ogv|mkv|mpg|mpeg|vob|fl[icv]|\
+        m2v|mov|webm|ts|mts|m4v|r[am]|qt|divx)
+            [ -f "$thumbnail.jpg" ] || ffmpegthumbnailer -s0 -q5 -i "$f" -o "$thumbnail.jpg"
+            image "$thumbnail.jpg" ;;
+
+        *)  LC_MESSAGES=c grep -m1 '^' "$f" 2>&1 |
+                grep -qi 'grep.*binary file matches' &&
+                echo Binary file && return
+            run bat ${LF_BAT_OPTS:--pf --number} --paging=never "$f" ;;
+    esac
+}
+
+run()
+{
+    [ "$1" = -p ] && pkg=$2 && shift 2
+    cmd=$1
+    [ -z "$pkg" ] && pkg=$cmd
+    if ! command -v $cmd >/dev/null; then
+        echo '[lfpreviewer]'
+        echo command "\"$cmd\"" is required for this preview.
+        echo install "\"$pkg\"".
+        return 1
+    fi
+    "$@"
+}
+
+# make a unique identifier for the given file based on file's
+# name, filesystem, type, size, and times of birth and modification.
+uid()
+{
+    stat --printf '%n\0%i\0%F\0%s\0%W\0%Y' -- "$(readlink -f "$f")" |
+        sha256sum | awk '{print $f}'
+}
+
+image()
+{
+    [ -n "$w" ] || [ -n "$h" ] || exit 1
+
+    if [ -z "$DISPLAY" ] || ! command -v ueberzug >/dev/null; then
+        run chafa -s ${w}x${h} "$f"
+        return
+    fi
+
+    declare -p -A cmd=(\
+        [action]=add \
+        [identifier]="PREVIEW" \
+        [path]="$f" \
+        [x]="$x" \
+        [y]="$y" \
+        [width]="$((w-1))" \
+        [height]="$h" \
+        [scaler]=contain
+    ) > "$FIFO_UEBERZUG"
+
+    exit 1
+}
+
+main "$@"

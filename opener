@@ -1,0 +1,212 @@
+#!/bin/sh
+# this script opens files based on their extention and mimetype.
+# use -h or --help for details.
+# requires: file, getopt, awk, sed, grep, cut, nohup.
+
+# paths
+programs_file="${XDG_CONFIG_HOME:-$HOME/config}/opener/programs"
+types_file="${XDG_CONFIG_HOME:-$HOME/config}/opener/types"
+
+# gnu getopt settings.
+name='opener'
+short_opts='hftsl:'
+long_opts='help,fork,type,same-type,lf:'
+
+# initialize some variables.
+check_same_type=false
+lf_mode=false
+fork=false
+fn=open
+
+main()
+{
+    # process options and arguments.
+    opts="$(get_opts "$@")"
+    [ $? -ne 0 ] && bad_option_exit
+    eval set -- "$opts"
+
+    # parse options.
+    while true; do
+        case "$1" in
+            -f | --fork ) fork=true; shift ;;
+            -t | --type ) fn=findtype; shift ;;
+            -s | --same-type ) check_same_type=true; shift ;;
+            -l | --lf ) lf_mode=true; lf_id="$2"; shift 2 ;;
+            -h | --help) print_help_exit ;;
+            --) shift; break ;;
+            *) bad_option_exit ;;
+        esac
+    done
+
+    # exit if no files given.
+    [ -z "$*" ] && print_error_exit "no file(s) given. Try -h or --help."
+
+    # check accessiblity of each file.
+    exit_if_files_not_readable "$@"
+
+    # check if all file types are the same if user wanted it.
+    [ "$check_same_type" = true ] && [ "$#" -gt 1  ] &&
+        exit_if_filetypes_different "$@"
+
+    . "$programs_file" # source the "programs" config file
+    $fn "$@" # run the intended function.
+}
+
+
+findtype()
+{
+    file="$1"
+    mime="$(getmime "$file")"
+    ext="$(getextention "$file")"
+
+    cut -d# -f1 "$types_file" | sed -e '1!b;s/^/\n\n/' |
+        awk -v mime="$mime" -v ext="$ext" '
+            BEGIN {
+                RS="\n{2,}[ \t]*"
+                FS="\n[ \t]*"
+            } FNR > 1 {
+                if ( \
+                    (length(mime) > 0 && match(mime,$2)) || \
+                    (length(ext)  > 0 && match(ext, $3))    \
+                ) {
+                    print $1
+                    exit
+                }
+            }
+        '
+}
+
+
+gui() {
+    [ -z "$DISPLAY" ] &&
+        print_error_exit "not in a graphical environment. exiting."
+
+    if [ "$fork" = true ]; then
+        setsid -f -- "$@" >/dev/null 2>&1
+    else
+        nohup -- "$@" >/dev/null 2>&1
+    fi
+}
+
+
+fgd() {
+
+    if [ $lf_mode = false ]; then
+        exec "$@"
+        return
+    fi
+
+    cache="${XDG_RUNTIME_DIR:-/tmp}/lf/opener"
+    argfile="$cache/args-$$"
+
+    mkdir -p "$cache"
+    rm -f "$argfile"
+
+    cmd="$1"
+    shift
+    printf '%s\n' "$@" > "$argfile"
+    lf -remote "send $lf_id \$xargs -d'\n' -a \"$argfile\" $cmd"
+}
+
+
+tui() {
+    gui "$TERMINAL" -e "$@"
+}
+
+
+getmime()
+{
+    file --dereference --mime-type --brief -- "$1"
+}
+
+
+getextention()
+{
+    echo "$1" | awk -F. '{print tolower($NF)}'
+}
+
+
+exit_if_files_not_readable()
+{
+    for file; do
+        [ ! -r "$file" ] && print_error_exit "cannot open file: $file"
+    done
+}
+
+
+exit_if_filetypes_different()
+{
+    are_all_files_same_type "$@" ||
+        print_error_exit "$name error: files are not the same type. exiting."
+}
+
+
+are_all_files_same_type()
+{
+    prev="$(findtype "$1")"
+    for file in "$@"; do
+        current="$(findtype "$file")"
+        [ "$current" != "$prev" ] && return 1
+        prev="$current"
+    done
+}
+
+
+# format passed options and arguments via gnu getopt.
+get_opts()
+{
+    getopt -qssh -n "$name" -o "$short_opts" -l "$long_opts" -- "$@"
+}
+
+
+bad_option_exit()
+{
+    print_error_exit "bad option(s). Try -h or --help."
+}
+
+
+print_error_exit()
+{
+    echo opener: "$@" >&2
+    exit 1
+}
+
+
+print_help_exit()
+{
+cat << 'eof'
+opener is a mime-type and extention based file opener.
+
+usage:
+  opener [OPTION...] [--] FILE...
+
+options:
+  -f, --fork            fork gui programs to background.
+  -t, --type            print given files' type and exit.
+  -s, --same-type       only open files if all of them are the same type.
+  -l, --lf <id>         lf mode; like regular mode, but with some extra
+                          bells and whistles for lf file manager.
+                          id of the lf instance must be provided.
+  -h, --help            show this help message.
+
+lf mode:
+  in this mode, gui commands run regularly, but foreground commands
+  are sent to lf (using lf -remote) to run in foreground.
+
+  this means that from lf, you can run opener in background (&opener)
+  and still be able to run foreground programs in foreground.
+
+  to use this mode, put something like this in your lfrc:
+    cmd open &opener --lf $id -- $f
+
+  in this mode, variables $lf_mode and $lf_id are made available
+  from the programs config (~/.config/opener/programs).
+  $lf_mode is true or false, and $lf_id is the lf's id.
+
+eof
+exit
+}
+
+
+main "$@"
+exit
