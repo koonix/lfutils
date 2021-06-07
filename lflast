@@ -1,6 +1,9 @@
 #!/bin/sh
 # print the last directory lf was open in,
 # then remove the lastdir file.
+case "$1" in
+    -remote|-doc|-version|-server) exit ;;
+esac
 ldglobal="${XDG_RUNTIME_DIR:-/tmp}/lf/lastdir"
-cat "$ldglobal"
+cat "$ldglobal" || echo lflast failed. >&2
 rm -f "$ldglobal"
