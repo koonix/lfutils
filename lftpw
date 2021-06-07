@@ -5,7 +5,8 @@
 
 # config
 lftmp="${XDG_RUNTIME_DIR:-/tmp}/lf"
-preview_cache="$lftmp/togglepreview"
+cache="$lftmp/togglepreview"
+status="$cache/$id"
 fifo_dir="$lftmp/fifo"
 
 main ()
@@ -14,14 +15,13 @@ main ()
     id="$1"
     npr="$2" # no preview ratios
     pr="$3" # preview ratios
-    status_file="$preview_cache/$id"
+    initial="$4" # initial preview status
     toggle_preview
 }
 
 toggle_preview ()
 {
-    if  is_preview_on
-    then
+    if is_preview_on; then
         set_preview_off
     else
         set_preview_on
@@ -30,7 +30,8 @@ toggle_preview ()
 
 is_preview_on ()
 {
-    test -f "$status_file"
+    [ "$initial" = off ] && initial=1 || initial=0
+    return "$(cat "$status" >/dev/null 2>&1 || $initial)"
 }
 
 set_preview_on ()
@@ -40,7 +41,7 @@ set_preview_on ()
         send $id set preview
         send $id load
     "
-    mkfile "$status_file"
+    echo 0 > "$status"
 }
 
 set_preview_off ()
@@ -49,7 +50,7 @@ set_preview_off ()
         send $id set nopreview
         send $id set ratios $npr
     "
-    rm "$status_file"
+    echo 1 > "$status"
     sleep 0.1
     cleanup_preview
 }
@@ -61,12 +62,6 @@ cleanup_preview ()
             export FIFO_UEBERZUG="$fifo"
             lfcleaner
         done
-}
-
-mkfile ()
-{
-    mkdir  "$(dirname "$1")"
-    touch "$1"
 }
 
 main "$@"
