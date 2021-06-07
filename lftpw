@@ -31,7 +31,7 @@ toggle_preview ()
 is_preview_on ()
 {
     [ "$initial" = off ] && initial=1 || initial=0
-    return "$(cat "$status" >/dev/null 2>&1 || $initial)"
+    return "$(cat "$status" 2>/dev/null || $initial)"
 }
 
 set_preview_on ()
