@@ -19,7 +19,13 @@ there is an AUR package for archlinux users:
 paru -S lfutils-git
 ```
 
-or you can put these scripts somewhere in your $PATH.
+otherwise:
+
+```
+git clone https://github.com/soystemd/lfutils.git
+cd lfutils
+sudo make install
+```
 
 ## lfrun, lflast
 
