@@ -36,7 +36,7 @@ sudo make install
 `lfrun` is a wrapper script for running lf, which
 initializes lflast and ueberzug for image previews.
 
-`lflast` prints the last directory the last instance of lf was in.
+`lflast` prints the last directory the last instance lf was in.
 
 put this in your .bashrc or .zshrc:
 
@@ -49,18 +49,21 @@ lf() {
 
 ## lfpreviewer, lfcleaner
 
-file previewer and cleaner scripts.
+file previewer and cleaner scripts, for previewing files/media.
 
 add these lines to your lfrc:
 
 ```
 set previewer lfpreviewer
 set cleaner lfcleaner
+set ratios 1:1
+set preview
 ```
 
 ## lfmount
 
-allows you to open archive files' contents in lf, using `archivemount`.
+allows you to open archive files' contents in lf, using `archivemount` (archive
+mounting is read-only as archivemount's read-write mounting sucks).
 
 put this in your lfrc:
 
@@ -70,16 +73,28 @@ cmd armount-passwd &lfmount -p $id $f
 cmd arunmount      &lfmount -u $id
 
 map [key] armount
-...
+map [key] armount-passwd
+map [key] arunmount
 ```
+
+`armount` mounts the archive and jumps to the mountpoint.
+
+archivemount can't tell wether an archive is password-protected;
+therefore the `armount` command returns an error when trying to mount
+such archives. so you can use `armount-passwd` which will prompt
+you for a password.
+
+while inside the mounted archive, use `arunmount` to unmount the archive
+and jump back to where you were before mouting.
 
 ## lfsxiv
 
-- open all the images in directory in sxiv
-- select the files that are selected in sxiv, in lf as well
-(selection happens upon sxiv's exit).
+- open all the images in the directory of the image
+- images that you select in sxiv, will also get selected in lf
+(selection happens upon exiting sxiv).
 
-use lfsxiv in your `open` command for opening images,
+to use lfsxiv, use it to open images in lf's `open` command or your
+file opener script/program,
 or use it as a standalone command/binding:
 
 ```
