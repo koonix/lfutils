@@ -10,6 +10,7 @@ useful scripts for the lf file manager.
 * [lftpw](#lftpw)
 * [lfselect](#lfselect)
 * [lfreload](#lfreload)
+* [dependencies](#dependencies)
 
 ## installation
 
@@ -26,6 +27,8 @@ git clone https://github.com/soystemd/lfutils.git
 cd lfutils
 sudo make install
 ```
+
+please see the [dependencies](#dependencies) section before using lfutils.
 
 ## lfrun, lflast
 
@@ -159,3 +162,38 @@ map D trash
 
 with this command, you will have to press enter before the
 command is run, which acts as a kind of confirmation.
+
+## dependencies
+
+the only hard dependency of lfutils is lf.
+all the dependencies listed here are technically optional,
+and installing each of them will add a certain feature
+to lfutils. however, I recommend installing all of them,
+as they're pretty small, and you'll probably need most of them,
+if not all.
+
+archlinux users can install all of these dependencies
+(except for sxiv, binutils and transmission-cli)
+by installing the AUR package `lfutils-meta`:
+
+```
+paru -S lfutils-meta
+```
+
+- **archivemount**: mounting and opening archives via lfmount
+- **[ueberzug](https://github.com/seebye/ueberzug)**: image previews
+- **[chafa](https://github.com/hpjansson/chafa)**: previewing images outside of a graphical environment
+- **[ffmpegthumbnailer](https://github.com/dirkvdb/ffmpegthumbnailer)**: previewing video thumbnails
+- **[bat](https://github.com/sharkdp/bat)**: previewing plain text and code
+- **[sxiv](https://github.com/muennich/sxiv)**: sxiv integration using lfsxiv
+- **atool**: previewing archive contents (install [atool-git](https://github.com/solsticedhiver/atool)([aur](https://aur.archlinux.org/packages/atool-git)) for zstd support)
+- **mediainfo**: previewing info about music/media files
+- **odt2txt**: previewing OpenDocument files
+- **poppler**: previewing PDF files
+- **gnome-epub-thumbnailer**: previewing epub ebook covers
+- **docx2txt**: previewing docx files
+- **catdoc**: previewing Microsoft document files
+- **imagemagick**: previewing svg files
+- **libcdio**: previewing ISO files
+- **binutils**: previewing object files
+- **transmission-cli**: previewing .torrent files
