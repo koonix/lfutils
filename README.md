@@ -12,6 +12,9 @@ useful scripts for the lf file manager.
 * [lfreload](#lfreload)
 * [dependencies](#dependencies)
 
+please take a look at the [dependencies](#dependencies)
+section before using lfutils.
+
 ## installation
 
 there is an AUR package for archlinux users:
@@ -27,8 +30,6 @@ git clone https://github.com/soystemd/lfutils.git
 cd lfutils
 sudo make install
 ```
-
-please see the [dependencies](#dependencies) section before using lfutils.
 
 ## lfrun, lflast
 
