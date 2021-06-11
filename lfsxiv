@@ -1,29 +1,38 @@
 #!/bin/sh
-# open images with sxiv from lf.
+# open images in sxiv with support for lf.
 
-# config
-regex='.*\.(jpe?g|png|gif|bmp|ico|svg|webp)$'
+# pattern for matching image files
+regex="${LF_IMG_REGEX:-.*\.(jpe?g|png|gif|bmp|ico|svg|webp)$}"
 
-id="$1" # lf's id
-img="$2" # the selected image
+# lf's id
+id="$1"
+shift
 
-if ! command -v sxiv >/dev/null; then
-    echo lfsxiv requires sxiv image viewer. >&2
-    exit 1
-fi
+# check if at least one image is given
+[ -z "$*" ] && echo give image >&2 && exit 1
 
-# cd to where the images are
-cd "$(dirname "$img")" || exit 1
+# check if sxiv is installed
+! command -v sxiv >/dev/null && echo lfsxiv requires sxiv. >&2 && exit 1
 
-# make a list of all images in that directory
-list="$(find -L -mindepth 1 -maxdepth 1 -type f -regextype egrep -iregex "$regex" -printf '%f\n')"
+# go to directory of image(s)
+cd "$(dirname "$1")" || exit 1
+
+# build a list of all images to open, one per line
+list="$(
+    [ $# -gt 1 ] && printf '%s\n' "$@" && exit
+    find -L -mindepth 1 -maxdepth 1 -type f \
+        -regextype egrep -iregex "$regex" -printf '%f\n'
+)"
 
 # find the number of the selected image amongst the list
-num="$(printf '%s\n' "$list" | awk -v i="$(basename "$img")" '$0==i{print NR}')"
+num="$(
+    [ $# -gt 1 ] && echo 1 && exit
+    printf '%s\n' "$list" | awk -v i="$(basename "$1")" '$0==i{print NR}'
+)"
 
-# open them with sxiv
+# open images in sxiv
 sel="$(printf '%s\n' "$list" | sxiv -aion$num)"
 
-# select images that are selected in sxiv, in lf
+# select sxiv's selection in lf
 [ -z "$sel" ] && exit
 echo "$sel" | lfselect $id
