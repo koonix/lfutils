@@ -45,7 +45,7 @@ main()
           iso) run -p libcdio iso-info --no-header -l "$f" ;;
           doc) run catdoc "$f" ;;
          docx) run docx2txt "$f" - ;;
-          csv) run bat -f --number --paging=never "$f" | sed s/,/\\n/g ;;
+          csv) run bat ${LF_BAT_OPTS:--pf --number} --paging=never "$f" | sed s/,/\\n/g ;;
         torrent) run -p transmission-cli transmission-show "$f" ;;
         odt|ods|odp|sxw) run odt2txt "$f" ;;
 
