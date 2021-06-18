@@ -58,6 +58,7 @@ cleanup ()
 {
     exec 3>&-
     rm -f "$FIFO_UEBERZUG" "$ldlocal"
+    [ $! -gt 0 ] && kill $!
 }
 
 main "$@"
