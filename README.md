@@ -2,20 +2,24 @@
 
 useful scripts for the lf file manager.
 
-* [installation](#installation)
-* [lfrun, lflast](#lfrun-lflast)
-* [lfpreviewer, lfcleaner](#lfpreviewer-lfcleaner)
-* [lfmount](#lfmount)
-* [lfsxiv](#lfsxiv)
-* [lftpw](#lftpw)
-* [lfselect](#lfselect)
-* [lfreload](#lfreload)
-* [dependencies](#dependencies)
+* [Installation](#installation)
+* [Utilities](#utilities)
+  * [lfrun, lflast](#lfrun-lflast)
+  * [lfpreviewer, lfcleaner](#lfpreviewer-lfcleaner)
+  * [lfmount](#lfmount)
+  * [lfsxiv](#lfsxiv)
+  * [lftpw](#lftpw)
+  * [lfselect](#lfselect)
+  * [lfreload](#lfreload)
+* [Environment Variables](#environment-variables)
+  * [LF_BAT_OPTS](#lf_bat_opts)
+  * [LF_IMG_REGEX](#lf_img_regex)
+* [Dependencies](#dependencies)
 
 please take a look at the [dependencies](#dependencies)
 section before using lfutils.
 
-## installation
+## Installation
 
 there is an AUR package for archlinux users:
 
@@ -30,6 +34,10 @@ git clone https://github.com/soystemd/lfutils.git
 cd lfutils
 sudo make install
 ```
+
+or just copy the scripts to a directory that's in yout PATH.
+
+## Utilities
 
 ## lfrun, lflast
 
@@ -59,6 +67,9 @@ set cleaner lfcleaner
 set ratios 1:1
 set preview
 ```
+
+also see the [LF_BAT_OPTS](#lf_bat_opts) section for configuring
+text file preview settings.
 
 ## lfmount
 
@@ -101,6 +112,10 @@ or use it as a standalone command/binding:
 cmd image &lfsxiv $id $f
 map [key] image
 ```
+
+also see the [LF_IMG_REGEX](#lf_img_regex) section for
+configuring the types of images that your build of sxiv
+supports.
 
 ## lftpw
 
@@ -179,7 +194,37 @@ map D trash
 with this command, you will have to press enter before the
 command is run, which acts as a kind of confirmation.
 
-## dependencies
+## Environment Variables
+
+## LF_BAT_OPTS
+
+lfpreviewer uses [bat](https://github.com/sharkdp/bat)
+for text file previews, called with the options `-pf --number`, which enable
+colorization and line numbers.
+
+but if you would like to pass different options to bat,
+you can put them in the `LF_BAT_OPTS` environment variable.
+
+example line to put in `~/.bash_profile` or `~/.zprofile`:
+
+```
+export BAT_THEME='gruvbox-dark'
+export LF_BAT_OPTS='-f'
+```
+
+## LF_IMG_REGEX
+
+lfsxiv only passes files with a certain extention to sxiv,
+because sxiv only opens images with a recognizable extention,
+which is dependent on your build of sxiv.
+
+by default, the regex that matches valid image file's names
+is `.*\.(jpe?g|png|gif|bmp|ico)$`,
+which matches image types that a regular build of sxiv supports.
+
+however you can change this by setting the `LF_IMG_REGEX` environment variable.
+
+## Dependencies
 
 the only hard dependency of lfutils is lf.
 all the dependencies listed here are technically optional,
