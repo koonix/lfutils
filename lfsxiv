@@ -2,7 +2,7 @@
 # open images in sxiv with support for lf.
 
 # pattern for matching image files
-regex="${LF_IMG_REGEX:-.*\.(jpe?g|png|gif|bmp|ico|svg|webp)$}"
+regex="${LF_IMG_REGEX:-.*\.(jpe?g|png|gif|bmp|ico)$}"
 
 # lf's id
 id="$1"
