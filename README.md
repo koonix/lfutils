@@ -1,6 +1,6 @@
 # lfutils
 
-useful scripts for the lf file manager.
+Useful scripts for the lf file manager.
 
 * [Installation](#installation)
 * [Utilities](#utilities)
@@ -16,18 +16,18 @@ useful scripts for the lf file manager.
   * [LF_IMG_REGEX](#lf_img_regex)
 * [Dependencies](#dependencies)
 
-please take a look at the [dependencies](#dependencies)
+Please take a look at the [dependencies](#dependencies)
 section before using lfutils.
 
 ## Installation
 
-there is an AUR package for archlinux users:
+There is an AUR package for Archlinux users:
 
 ```
 paru -S lfutils-git
 ```
 
-otherwise:
+Otherwise:
 
 ```
 git clone https://github.com/soystemd/lfutils.git
@@ -35,7 +35,7 @@ cd lfutils
 sudo make install
 ```
 
-or just copy the scripts to a directory that's in yout PATH.
+Or just copy the scripts to a directory that's in yout PATH.
 
 ## Utilities
 
@@ -46,7 +46,7 @@ initializes lflast and ueberzug for image previews.
 
 `lflast` prints the last directory the last instance lf was in.
 
-put this in your .bashrc or .zshrc:
+Put this in your .bashrc or .zshrc:
 
 ```
 lf() {
@@ -57,9 +57,9 @@ lf() {
 
 ## lfpreviewer, lfcleaner
 
-file previewer and cleaner scripts, for previewing files/media.
+File previewer and cleaner scripts, for previewing files/media.
 
-add these lines to your lfrc:
+Add these lines to your lfrc:
 
 ```
 set previewer lfpreviewer
@@ -68,15 +68,15 @@ set ratios 1:1
 set preview
 ```
 
-also see the [LF_BAT_OPTS](#lf_bat_opts) section for configuring
+Also see the [LF_BAT_OPTS](#lf_bat_opts) section for configuring
 text file preview settings.
 
 ## lfmount
 
-allows you to open archive files' contents in lf, using `archivemount` (archive
+Allows you to open archive files' contents in lf, using `archivemount` (archive
 mounting is read-only as archivemount's read-write mounting sucks).
 
-put this in your lfrc:
+Put this in your lfrc:
 
 ```
 cmd armount        &lfmount $id $f
@@ -90,21 +90,21 @@ map [key] arunmount
 
 `armount` mounts the archive and jumps to the mountpoint.
 
-archivemount can't tell wether an archive is password-protected;
-therefore the `armount` command returns an error when trying to mount
-such archives. so you can use `armount-passwd` which will prompt
+Archivemount can't tell wether an archive is password-protected;
+Therefore the `armount` command returns an error when trying to mount
+such archives. So you can use `armount-passwd` which will prompt
 you for a password.
 
-while inside the mounted archive, use `arunmount` to unmount the archive
+While inside the mounted archive, use `arunmount` to unmount the archive
 and jump back to where you were before mouting.
 
 ## lfsxiv
 
-- open all the images in the directory of the image
-- images that you select in sxiv, will also get selected in lf
+- Open all the images in the directory of the image
+- Images that you select in sxiv, will also get selected in lf
 (selection happens upon exiting sxiv).
 
-to use lfsxiv, use it to open images in lf's `open` command or your
+To use lfsxiv, use it to open images in lf's `open` command or your
 file opener script/program,
 or use it as a standalone command/binding:
 
@@ -113,14 +113,14 @@ cmd image &lfsxiv $id $f
 map [key] image
 ```
 
-also see the [LF_IMG_REGEX](#lf_img_regex) section for
+Also see the [LF_IMG_REGEX](#lf_img_regex) section for
 configuring the types of images that your build of sxiv
 supports.
 
 ## lftpw
 
-toggle lf's preview pane while readjusting ratios.
-makes lf's preview toggling look like ranger's.
+Toggle lf's preview pane while readjusting ratios.
+Makes lf's preview toggling look like ranger's.
 
 lftpw requires three arguments, and an optional fourth:
 
@@ -129,7 +129,7 @@ lftpw requires three arguments, and an optional fourth:
 3. pane ratios when preview is enabled
 4. [optional] lf's initial preview status [possible values: on (default), off]
 
-add to your lfrc:
+Add to your lfrc:
 
 ```
 set ratios 1:3:2
@@ -137,7 +137,7 @@ cmd toggle-preview &lftpw $id 1:5 1:3:2
 map [key] toggle-preview
 ```
 
-change the ratios to your liking.
+Change the ratios to your liking.
 
 I recommend using lftpw with previews and panes
 initially disabled:
@@ -151,19 +151,19 @@ map [key] toggle-preview
 
 ## lfselect
 
-select multiple files remotely in lf. this util is used
+Select multiple files remotely in lf. this util is used
 by lfsxiv to select sxiv's selected images in lf.
 
-if only one file is given, lfselect will just put
+If only one file is given, lfselect will just put
 the cursor over it instead of selecting it.
 
-you can supply list of files from stdin:
+You can supply list of files from stdin:
 
 ```
 printf '%s\n' *.jpg | lfselect <lf's id>
 ```
 
-or you can give it as the second argument:
+Or you can give it as the second argument:
 
 ```
 lfselect <lf's id> "$(printf '%s\n' *.jpg)"
@@ -171,8 +171,8 @@ lfselect <lf's id> "$(printf '%s\n' *.jpg)"
 
 ## lfreload
 
-reload files and directories. just sends the load/reload command to lf.
-useful for using inside push commands, because it's shorter than
+Reload files and directories. just sends the load/reload command to lf.
+Useful for using inside push commands, because it's shorter than
 lf -remote "send $id reload".
 
 ```
@@ -181,17 +181,17 @@ lfreload <lf's id>
 lfreload -f <lf's id>
 ```
 
-if you give it the -f option, it sends `reload`. otherwise sends `load`.
-read lf's manual for info on their difference.
+If you give it the -f option, it sends `reload`. otherwise sends `load`.
+Read lf's manual for info on their difference.
 
-example in lfrc:
+Example in lfrc:
 
 ```
 cmd trash push &trash-put<space>$fx;lfreload<space>$id
 map D trash
 ```
 
-with this command, you will have to press enter before the
+With this command, you will have to press enter before the
 command is run, which acts as a kind of confirmation.
 
 ## Environment Variables
@@ -199,13 +199,13 @@ command is run, which acts as a kind of confirmation.
 ## LF_BAT_OPTS
 
 lfpreviewer uses [bat](https://github.com/sharkdp/bat)
-for text file previews, called with the options `-pf --number`, which enable
+for text file previews, called with the options `-pf --number`, which enables
 colorization and line numbers.
 
-but if you would like to pass different options to bat,
+But if you would like to pass different options to bat,
 you can put them in the `LF_BAT_OPTS` environment variable.
 
-example line to put in `~/.bash_profile` or `~/.zprofile`:
+Example line to put in `~/.bash_profile` or `~/.zprofile`:
 
 ```
 export BAT_THEME='gruvbox-dark'
@@ -218,22 +218,24 @@ lfsxiv only passes files with a certain extention to sxiv,
 because sxiv only opens images with a recognizable extention,
 which is dependent on your build of sxiv.
 
-by default, the regex that matches valid image file's names
+By default, the regex that matches valid image file's names
 is `.*\.(jpe?g|png|gif|bmp|ico)$`,
 which matches image types that a regular build of sxiv supports.
 
-however you can change this by setting the `LF_IMG_REGEX` environment variable.
+However you can change this by setting the `LF_IMG_REGEX` environment variable.
 
 ## Dependencies
 
-the only hard dependency of lfutils is lf.
-all the dependencies listed here are technically optional,
+The only hard dependency of lfutils is lf.
+All the dependencies listed here are technically optional,
 and installing each of them will add a certain feature
-to lfutils. however, I recommend installing all of them,
+to lfutils.
+
+However, I recommend installing all of them,
 as they're pretty small, and you'll probably need most of them,
 if not all.
 
-archlinux users can install all of these dependencies
+Archlinux users can install all of these dependencies
 (except for sxiv, binutils and transmission-cli)
 by installing the AUR package `lfutils-meta`:
 
@@ -241,20 +243,20 @@ by installing the AUR package `lfutils-meta`:
 paru -S lfutils-meta
 ```
 
-- **archivemount**: mounting and opening archives via lfmount
-- **[ueberzug](https://github.com/seebye/ueberzug)**: image previews
-- **[chafa](https://github.com/hpjansson/chafa)**: previewing images outside of a graphical environment
-- **[ffmpegthumbnailer](https://github.com/dirkvdb/ffmpegthumbnailer)**: previewing video thumbnails
-- **[bat](https://github.com/sharkdp/bat)**: previewing plain text and code
+- **archivemount**: Mounting and opening archives via lfmount
+- **[ueberzug](https://github.com/seebye/ueberzug)**: Image previews
+- **[chafa](https://github.com/hpjansson/chafa)**: Previewing images outside of a graphical environment
+- **[ffmpegthumbnailer](https://github.com/dirkvdb/ffmpegthumbnailer)**: Previewing video thumbnails
+- **[bat](https://github.com/sharkdp/bat)**: Previewing plain text and code
 - **[sxiv](https://github.com/muennich/sxiv)**: sxiv integration using lfsxiv
-- **atool**: previewing archive contents (install [atool-git](https://github.com/solsticedhiver/atool)([aur](https://aur.archlinux.org/packages/atool-git)) for zstd support)
-- **mediainfo**: previewing info about music/media files
-- **odt2txt**: previewing OpenDocument files
-- **poppler**: previewing PDF files
-- **gnome-epub-thumbnailer**: previewing epub ebook covers
-- **docx2txt**: previewing docx files
-- **catdoc**: previewing Microsoft document files
-- **imagemagick**: previewing svg files
-- **libcdio**: previewing ISO files
-- **binutils**: previewing object files
-- **transmission-cli**: previewing .torrent files
+- **atool**: Previewing archive contents (install [atool-git](https://github.com/solsticedhiver/atool)([aur](https://aur.archlinux.org/packages/atool-git)) for zstd support)
+- **mediainfo**: Previewing info about music/media files
+- **odt2txt**: Previewing OpenDocument files
+- **poppler**: Previewing PDF files
+- **gnome-epub-thumbnailer**: Previewing epub ebook covers
+- **docx2txt**: Previewing docx files
+- **catdoc**: Previewing Microsoft document files
+- **imagemagick**: Previewing svg files
+- **libcdio**: Previewing ISO files
+- **binutils**: Previewing object files
+- **transmission-cli**: Previewing .torrent files
