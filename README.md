@@ -9,6 +9,7 @@ Useful scripts for the lf file manager.
   * [lfmount](#lfmount)
   * [lfsxiv](#lfsxiv)
   * [lftpw](#lftpw)
+  * [lfpaste](#lfpaste)
   * [lfselect](#lfselect)
   * [lfreload](#lfreload)
 * [Environment Variables](#environment-variables)
@@ -149,6 +150,36 @@ cmd toggle-preview &lftpw $id 1 1:2 off
 map [key] toggle-preview
 ```
 
+## lfpaste
+
+Intended to be used as lf's paste command.
+It allows you to customize the way files are copied
+(e.g. preserving modification times).
+
+Uses `rsync` for copying and moving, but switches to `mv`
+when appropriate (when source and destination are on the same filesystem).
+
+It also displays a progressbar in lf, and prohibits quitting by pressing q, until
+the copy/move has finished.
+
+lfpaste also provides the lf command `cancel-copy`, which kills the ongoing
+copy or move operation (if there is one).
+You can set the command to echo a helpful message initially.
+lfpaste will change the command to something that will
+stop the copy/move operation when the operation starts,
+and then back to a helpful message when the operation is over.
+
+The options passed to rsync by default are `-ab --inplace`;
+But can override them by passing options of your own to lfpaste.
+
+Add this to your lfrc:
+
+```
+cmd cancel-copy echo no copy or move in progress
+cmd paste &lfpaste $id [rsync-opts]
+map [key] cancel-copy
+```
+
 ## lfselect
 
 Select multiple files remotely in lf. this util is used
@@ -249,6 +280,7 @@ paru -S lfutils-meta
 - **[ffmpegthumbnailer](https://github.com/dirkvdb/ffmpegthumbnailer)**: Previewing video thumbnails
 - **[bat](https://github.com/sharkdp/bat)**: Previewing plain text and code
 - **[sxiv](https://github.com/muennich/sxiv)**: sxiv integration using lfsxiv
+- **rsync**: Required by lfpaste for copying files
 - **atool**: Previewing archive contents (install [atool-git](https://github.com/solsticedhiver/atool)([aur](https://aur.archlinux.org/packages/atool-git)) for zstd support)
 - **mediainfo**: Previewing info about music/media files
 - **odt2txt**: Previewing OpenDocument files
