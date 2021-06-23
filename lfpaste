@@ -47,6 +47,7 @@ copy()
 
     send "map q echo $mode in progress"
     $fn &
+    sleep 0.1
     send "cmd cancel-copy &kill $(pgrep -f --newest "$pgrep_ptrn")"
     wait
     send 'map q quit'
