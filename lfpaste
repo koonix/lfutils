@@ -10,14 +10,21 @@ list=~/.local/share/lf/files
 rsync_success="${XDG_RUNTIME_DIR:-/tmp}/rsync_success"
 rsync_opts='-ab --inplace'
 
+# check if lf's id is provided
 [ -z "$1" ] && exit 1
 id=$1
 shift
 
+# check if the given id is a number
+[ $id -eq $id ] || exit 1
+
+# if custom rsync options are provided,
+# override the defaults with them.
 [ -n "$*" ] && rsync_opts="$*"
 
 main()
 {
+    [ -r $list ] || exit 1
     mode=$(head -n1 $list)
 
     case $mode in
