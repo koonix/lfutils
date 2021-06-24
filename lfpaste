@@ -7,7 +7,6 @@
 
 # config
 list=~/.local/share/lf/files
-rsync_success="${XDG_RUNTIME_DIR:-/tmp}/rsync_success"
 rsync_opts='-ab --inplace'
 
 # check if lf's id is provided
@@ -125,6 +124,9 @@ x() {
 send() {
     lf -remote "send $id $*"
 }
+
+rsync_success="${XDG_RUNTIME_DIR:-/tmp}/rsync_success"
+trap "rm -f '$rsync_success'" EXIT
 
 main "$@"
 exit
