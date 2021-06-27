@@ -35,7 +35,7 @@ main()
 
     rm $list
     lfreload -f $id
-    lf -remote 'send clear'
+    send clear
 }
 
 # start the copy, prepare the cancel-copy command
@@ -47,7 +47,7 @@ copy()
     send "map q echo $mode in progress"
     $fn &
     sleep 0.1
-    send "cmd cancel-copy &kill $(pgrep -f --newest "$pgrep_ptrn")"
+    send "cmd cancel-copy &kill $(pgrep -f --newest "$pgrep_ptrn") && ( (sleep 1; lf -remote 'send $id echo $mode canceled.') & ); lfreload -f $id"
     wait
     send 'map q quit'
     send "cmd cancel-copy echo no copy or move in progress"
