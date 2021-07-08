@@ -15,12 +15,12 @@ main ()
 {
     case "$1" in
         -remote|-doc|-version|-server)
-            lf "$@"
+            lf "$@" 3>&-
             return
         ;;
     esac
 
-    trap cleanup EXIT HUP
+    trap cleanup EXIT
     mkdir -p "$fifo" "$lddir"
     is_in_graphical_env && command -v ueberzug >/dev/null && ueberzug_init
     lf_run "$@"
@@ -44,7 +44,7 @@ ueberzug_init ()
 {
     export FIFO_UEBERZUG="$fifo/ueberzug-$$"
     mkfifo "$FIFO_UEBERZUG"
-    ueberzug layer -s <"$FIFO_UEBERZUG" -p bash &
+    ueberzug layer -s -p bash <"$FIFO_UEBERZUG" &
     exec 3>"$FIFO_UEBERZUG"
 }
 
