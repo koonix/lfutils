@@ -39,9 +39,11 @@ main()
 
         tar|tgz|tbz|tbz2|tz|tzo|tlz|txz|t7z|tzst|zip|jar|war|rar|lha|lzh|7z|\
         ace|a|arj|arc|rpm|deb|cab|zst|cpio)
-            run atool -l "$f"; return
+            run atool -l "$f"
         ;;
 
+        gz) list_archive gzip "$f" ;;
+        xz) list_archive xz "$f" ;;
         o) run -p binutils nm "$f" | less ;;
         iso) run -p libcdio iso-info --no-header -l "$f" ;;
         doc) run catdoc "$f" ;;
@@ -158,6 +160,14 @@ image()
     ) > "$FIFO_UEBERZUG"
 
     exit 1
+}
+
+list_archive()
+{
+    cmd="$1"
+    list="$(run "$cmd" -l "$2")"
+    begin="$(printf '%s\n' "$list" | grep -boim1 ratio | cut -d: -f1)"
+    printf '%s\n' "$list" | cut -c$((begin+1))-
 }
 
 main "$@"
