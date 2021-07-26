@@ -1,64 +1,53 @@
 #!/bin/sh
-# run lf with support for
-# ueberzug image previews and lflast.
+# run lf with support for ueberzug image previews and lflast.
 
 # config
-lftmp="${XDG_RUNTIME_DIR:-/tmp}/lf"
-fifo="$lftmp/fifo"
-# last-dir
-lddir="$lftmp/lastdirlocal"
-ldglobal="$lftmp/lastdir"
-
-set -e
+cache_dir="${XDG_RUNTIME_DIR:-/tmp}/lf"
+last_dir_local="$(mktemp -u "$cache_dir/lastdirlocal/XXXXXX")"
+last_dir_global="$cache_dir/lastdir"
+fifo="$cache_dir/fifo/$$"
 
 main ()
 {
     case "$1" in
-        -remote|-doc|-version|-server)
-            lf "$@" 3>&-
+        -remote|-doc|-version|-server|-help)
+            lf "$@"
             return
         ;;
     esac
 
     trap cleanup EXIT
-    mkdir -p "$fifo" "$lddir"
-    is_in_graphical_env && command -v ueberzug >/dev/null && ueberzug_init
-    lf_run "$@"
-}
-
-lf_run ()
-{
-    ldlocal="$(mktemp "$lddir/XXXXXX")"
-    lf -last-dir-path="$ldlocal" "$@" 3>&-
-
-    if [ ! -r "$ldlocal" ] || [ -z "$(cat "$ldlocal")" ]
-    then
-        rm -f "$ldglobal"
-        return
-    fi
-
-    mv "$ldlocal" "$ldglobal" >/dev/null 2>&1
+    ueberzug_init
+    lf -last-dir-path="$last_dir_local" "$@"
+    rm -f "$last_dir_global"
+    mv "$last_dir_local" "$last_dir_global" >/dev/null 2>&1
 }
 
 ueberzug_init ()
 {
-    export FIFO_UEBERZUG="$fifo/ueberzug-$$"
-    mkfifo "$FIFO_UEBERZUG"
-    ueberzug layer -s < "$FIFO_UEBERZUG" &
-    exec 3>"$FIFO_UEBERZUG"
+    is_in_graphical_env || return 1
+    command -v ueberzug >/dev/null || return 1
+
+    mkdir -p "$(dirname "$fifo")"
+    mkfifo "$fifo"
+
+    sleep 1000000000 > "$fifo" &
+    sleep_pid=$!
+
+    ueberzug layer -s < "$fifo" &
+    export FIFO_UEBERZUG="$fifo"
+}
+
+cleanup ()
+{
+    [ -n "$sleep_pid" ] && kill $sleep_pid
+    rm -f "$fifo" "$last_dir_local"
 }
 
 is_in_graphical_env ()
 {
     [ -n "$DISPLAY" ] && [ -z "$SSH_CLIENT" ] && [ -z "$SSH_TTY" ] && return 0
     return 1
-}
-
-cleanup ()
-{
-    exec 3>&-
-    rm -f "$FIFO_UEBERZUG" "$ldlocal"
-    [ "$!" != 0 ] && kill $! 2>/dev/null
 }
 
 main "$@"
