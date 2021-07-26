@@ -3,8 +3,6 @@
 
 # config
 cache_dir="${XDG_RUNTIME_DIR:-/tmp}/lf"
-last_dir_local="$(mktemp -u "$cache_dir/lastdirlocal/XXXXXX")"
-last_dir_global="$cache_dir/lastdir"
 fifo="$cache_dir/fifo/$$"
 
 main ()
@@ -18,10 +16,8 @@ main ()
 
     trap cleanup EXIT
     ueberzug_init
-    mkdir -p "$(dirname "$last_dir_local")"
-    lf -last-dir-path="$last_dir_local" "$@"
-    rm -f "$last_dir_global"
-    mv "$last_dir_local" "$last_dir_global" >/dev/null 2>&1
+    mkdir -p "$cache_dir"
+    lf -last-dir-path="$cache_dir/lastdir" "$@"
 }
 
 ueberzug_init ()
@@ -30,7 +26,7 @@ ueberzug_init ()
     command -v ueberzug >/dev/null || return 1
 
     mkdir -p "$(dirname "$fifo")"
-    mkfifo "$fifo"
+    mkfifo "$fifo" || return 1
 
     sleep 1000000000 > "$fifo" &
     sleep_pid=$!
@@ -42,7 +38,7 @@ ueberzug_init ()
 cleanup ()
 {
     [ -n "$sleep_pid" ] && kill $sleep_pid
-    rm -f "$fifo" "$last_dir_local"
+    rm -f "$fifo"
 }
 
 is_in_graphical_env ()

@@ -149,6 +149,8 @@ image()
         return
     fi
 
+    [ -p "$FIFO_UEBERZUG" ] || return
+
     printf '%s%s%s\n' \
         '{ "action": "add", "identifier": "lfpreview", "scaler": "contain",' \
           '"path": "'"$img"'", "x": '$x', "y": '$y','  \
