@@ -2,8 +2,9 @@
 # run lf with support for ueberzug image previews and lflast.
 
 # config
-cache_dir="${XDG_RUNTIME_DIR:-/tmp}/lf"
-fifo="$cache_dir/fifo/$$"
+tmp="${XDG_RUNTIME_DIR:-/tmp}/lf"
+export FIFO_UEBERZUG="$tmp/fifo-$$"
+export PREVIEW_STATE="$tmp/tpw-$$"
 
 main ()
 {
@@ -15,9 +16,9 @@ main ()
     esac
 
     trap cleanup EXIT
+    mkdir -p "$tmp"
     ueberzug_init
-    mkdir -p "$cache_dir"
-    lf -last-dir-path="$cache_dir/lastdir" "$@"
+    lf -last-dir-path="$tmp/lastdir" "$@"
 }
 
 ueberzug_init ()
@@ -25,20 +26,19 @@ ueberzug_init ()
     is_in_graphical_env || return 1
     command -v ueberzug >/dev/null || return 1
 
-    mkdir -p "$(dirname "$fifo")"
-    mkfifo "$fifo" || return 1
+    mkfifo "$FIFO_UEBERZUG" || return 1
 
-    sleep 1000000000 > "$fifo" &
+    sleep 1000000000 > "$FIFO_UEBERZUG" &
     sleep_pid=$!
 
-    ueberzug layer -s < "$fifo" &
-    export FIFO_UEBERZUG="$fifo"
+    ueberzug layer -s < "$FIFO_UEBERZUG" &
+    export FIFO_UEBERZUG="$FIFO_UEBERZUG"
 }
 
 cleanup ()
 {
     [ -n "$sleep_pid" ] && kill $sleep_pid
-    rm -f "$fifo"
+    rm -f "$FIFO_UEBERZUG" "$PREVIEW_STATE"
 }
 
 is_in_graphical_env ()

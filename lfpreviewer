@@ -2,8 +2,7 @@
 # lf's file previewer script.
 
 # config
-cache_dir="${XDG_RUNTIME_DIR:-/tmp}/lf"
-thumb_dir="$cache_dir/thumbnails"
+thumb_dir="${XDG_RUNTIME_DIR:-/tmp}/lf/thumbnails"
 
 # args
 f="$1" # file to preview
@@ -16,7 +15,7 @@ main()
 {
     [ -z "$1" ] && echo lf previewer script. && exit 1
 
-    mkdir -p "$thumb_dir"
+    mkdir -p "$thumb_dir" || return 1
 
     twoext="$(printf '%s\n' "$f" | tr '[:upper:]' '[:lower:]' | rev | cut -d. -f1-2 | rev)"
     ext="$(printf '%s\n' "$f" | tr '[:upper:]' '[:lower:]' | rev | cut -d. -f1 | rev)"
@@ -135,8 +134,8 @@ run()
 uid()
 {
     stat -c '%n%i%F%s%W%Y' -- "$(readlink -f "$f")" | sha256sum | cut -d' ' -f1
-    size="$(du -s "$cache_dir" | cut -f1)"
-    [ "$size" -ge 30000 ] && rm -rf "$cache_dir"/*
+    size="$(du -s "$thumb_dir" | cut -f1)"
+    [ "$size" -ge 30000 ] && rm -rf "$thumb_dir"/*
 }
 
 image()

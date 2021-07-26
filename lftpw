@@ -3,11 +3,6 @@
 # usage:   $ lftp $id <no-preview-ratios> <preview-ratios>
 # example: $ lftp 123 1 2:1
 
-# config
-lftmp="${XDG_RUNTIME_DIR:-/tmp}/lf"
-cache="$lftmp/togglepreview"
-fifo_dir="$lftmp/fifo"
-
 main ()
 {
     while getopts i: opt; do
@@ -20,11 +15,9 @@ main ()
     [ -z "$id" ] && echo id of lf is not given. >&2 && exit 1
 
     [ -z "$*" ] && exit 1
-    npr="$1" # no preview ratios
-    pr="$2" # preview ratios
-    initial="$3" # initial preview status
-    mkdir -p "$cache"
-    status="$cache/$id"
+    npr="$1"      # no preview ratios
+    pr="$2"       # preview ratios
+    initial="$3"  # initial preview state
     toggle_preview
 }
 
@@ -40,13 +33,13 @@ toggle_preview ()
 is_preview_on ()
 {
     [ "$initial" = off ] && initial=1 || initial=0
-    return "$(cat "$status" 2>/dev/null || echo $initial)"
+    return "$(cat "$PREVIEW_STATE" 2>/dev/null || echo $initial)"
 }
 
 set_preview_on ()
 {
     lf -remote "send $id push :set<space>ratios<space>$pr;set<space>preview;load<enter>"
-    echo 0 > "$status"
+    echo 0 > "$PREVIEW_STATE"
 }
 
 set_preview_off ()
@@ -55,7 +48,7 @@ set_preview_off ()
     lfcleaner
     lf -remote "send $id push :set<space>nopreview;set<space>ratios<space>$npr<enter>"
     sleep 0.2 && lfcleaner
-    echo 1 > "$status"
+    echo 1 > "$PREVIEW_STATE"
     wait
 }
 
