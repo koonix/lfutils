@@ -45,22 +45,18 @@ is_preview_on ()
 
 set_preview_on ()
 {
-    lf -remote "
-        send $id set ratios $pr
-        send $id set preview
-        send $id load
-    "
+    lf -remote "send $id push :set<space>ratios<space>$pr;set<space>preview;load<enter>"
     echo 0 > "$status"
 }
 
 set_preview_off ()
 {
-    lf -remote "
-        send $id set nopreview
-        send $id set ratios $npr
-    "
+    head -n1 "$FIFO_UEBERZUG" >/dev/null &
+    lfcleaner
+    lf -remote "send $id push :set<space>nopreview;set<space>ratios<space>$npr<enter>"
+    sleep 0.2 && lfcleaner
     echo 1 > "$status"
-    [ -n "$FIFO_UEBERZUG" ] && sleep 0.1 && lfcleaner
+    wait
 }
 
 main "$@"
