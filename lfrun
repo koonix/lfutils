@@ -30,7 +30,6 @@ ueberzug_init ()
     command -v ueberzug >/dev/null || return 1
 
     mkdir -p "$(dirname "$fifo")"
-    find "$(dirname "$fifo")" -type f -delete
     mkfifo "$fifo"
 
     sleep 1000000000 > "$fifo" &
