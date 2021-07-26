@@ -18,6 +18,7 @@ main ()
 
     trap cleanup EXIT
     ueberzug_init
+    mkdir -p "$(dirname "$last_dir_local")"
     lf -last-dir-path="$last_dir_local" "$@"
     rm -f "$last_dir_global"
     mv "$last_dir_local" "$last_dir_global" >/dev/null 2>&1
