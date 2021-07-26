@@ -148,7 +148,7 @@ image()
         return
     fi
 
-    [ -p "$FIFO_UEBERZUG" ] || return
+    [ -p "$FIFO_UEBERZUG" ] || exit 1
 
     printf '%s%s%s\n' \
         '{ "action": "add", "identifier": "lfpreview", "scaler": "contain",' \
