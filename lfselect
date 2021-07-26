@@ -1,8 +1,16 @@
 #!/bin/bash
 # read filenames from stdin/args and selects them in lf.
 
-id=$1
-[ -n "$2" ] && list="$2" || list="$(cat)"
+while getopts i: opt; do
+    case $opt in
+        i) export id="$OPTARG" ;;
+        ?) exit 1 ;;
+    esac
+done
+shift $((OPTIND-1))
+[ -z "$id" ] && echo id of lf is not given. >&2 && exit 1
+
+[ -n "$1" ] && list="$1" || list="$(cat)"
 list="$(printf '%s\n' "$list" | sed 's/"/\\"/g')"
 
 # if only one file is given, put the cursor on it, don't select.

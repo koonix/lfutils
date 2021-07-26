@@ -4,9 +4,14 @@
 # pattern for matching image files
 regex="${LF_IMG_REGEX:-.*\.(jpe?g|png|gif|bmp|ico)$}"
 
-# lf's id
-id="$1"
-shift
+while getopts i: opt; do
+    case $opt in
+        i) export id="$OPTARG" ;;
+        ?) exit 1 ;;
+    esac
+done
+shift $((OPTIND-1))
+[ -z "$id" ] && echo id of lf is not given. >&2 && exit 1
 
 # check if at least one image is given
 [ -z "$*" ] && echo give image >&2 && exit 1
@@ -35,4 +40,4 @@ sel="$(printf '%s\n' "$list" | sxiv -aion$num)"
 
 # select sxiv's selection in lf
 [ -z "$sel" ] && exit
-echo "$sel" | lfselect $id
+printf '%s\n' "$sel" | lfselect

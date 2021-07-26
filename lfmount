@@ -2,20 +2,24 @@
 # mount and unmount archives with lf. (read-only.)
 # requires archivemount. duuuuuh.
 # usage:
-# mounting: $ lfmount $id $f
-# unmounting: $ lfmount -u $id
+# mounting: $ lfmount [-i LF'S_ID] ARCHIVE_FILE
+# unmounting: $ lfmount -u [-i LF'S_ID]
 
-case "$1" in
-    -u) shift; unmount=true ;;
-    -p) shift; password_arg='-o password' ;;
-esac
+while getopts i:up opt; do
+    case $opt in
+        i) export id="$OPTARG" ;;
+        u) unmount=true ;;
+        p) password_arg='-o password' ;;
+        ?) exit 1 ;;
+    esac
+done
+shift $((OPTIND-1))
 
 lfecho () {
     lf -remote "send $id echo '$*'"
     return 0
 }
 
-id="$1"
 tmp="${XDG_RUNTIME_DIR:-/tmp}/lf/mount"
 
 # this block handles unmounting.
@@ -24,7 +28,7 @@ if [ "$unmount" = true ]; then
         lfecho not in an archive. && exit 1
     source="$(cat "$base/source")"
     cd "$base"
-    lfselect "$id" "$source"
+    lfselect "$source"
     sleep 0.1
     ! fusermount -u "$base/mount"/*/ &&
         lfecho unmount failed. &&
@@ -38,7 +42,7 @@ if [ "$unmount" = true ]; then
     exit
 fi
 
-ar="$2"
+ar="$1"
 
 # check if the archive is already mounted
 # and go there if it is.
@@ -46,7 +50,7 @@ for dir in "$tmp"/*; do
     [ ! -d "$dir" ] && continue
     if [ "$ar" = "$(cat "$dir/source")" ]; then
         lfecho already mounted.
-        lfselect "$id" "$dir/mount"/*/
+        lfselect "$dir/mount"/*/
         exit
     fi
 done
@@ -67,6 +71,6 @@ fi
 
 echo "$ar" > "$tmp/$rand/source"
 
-lfselect "$id" "$mnt"
+lfselect "$mnt"
 lf -remote "send $id open"
-lfreload -f "$id"
+lfreload -f

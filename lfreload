@@ -1,7 +1,16 @@
 #!/bin/sh
-# usage: lfreload [-f] <lf's id>
+# usage: lfreload [-i LF'S_ID] [-f]
 # reload modified files and dirs in lf.
 # with -f, flushes the cache and reloads all files and directories.
+
 cmd=load
-[ "$1" = -f ] && shift && cmd=reload
-lf -remote "send $1 $cmd"
+while getopts i:f opt; do
+    case $opt in
+        i) export id="$OPTARG" ;;
+        f) cmd=reload ;;
+        ?) exit 1 ;;
+    esac
+done
+shift $((OPTIND-1))
+
+lf -remote "send $id $cmd"

@@ -10,11 +10,19 @@ fifo_dir="$lftmp/fifo"
 
 main ()
 {
+    while getopts i: opt; do
+        case $opt in
+            i) export id="$OPTARG" ;;
+            ?) exit 1 ;;
+        esac
+    done
+    shift $((OPTIND-1))
+    [ -z "$id" ] && echo id of lf is not given. >&2 && exit 1
+
     [ -z "$*" ] && exit 1
-    id="$1"
-    npr="$2" # no preview ratios
-    pr="$3" # preview ratios
-    initial="$4" # initial preview status
+    npr="$1" # no preview ratios
+    pr="$2" # preview ratios
+    initial="$3" # initial preview status
     mkdir -p "$cache"
     status="$cache/$id"
     toggle_preview
