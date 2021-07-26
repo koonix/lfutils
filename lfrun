@@ -44,7 +44,7 @@ ueberzug_init ()
 {
     export FIFO_UEBERZUG="$fifo/ueberzug-$$"
     mkfifo "$FIFO_UEBERZUG"
-    ueberzug layer -s -p bash <"$FIFO_UEBERZUG" &
+    ueberzug layer -s < "$FIFO_UEBERZUG" &
     exec 3>"$FIFO_UEBERZUG"
 }
 

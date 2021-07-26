@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/bin/sh
 # lf's file previewer script.
 
 # config
-cachedir="${XDG_RUNTIME_DIR:-/tmp}/lf/thumbnails"
+cache_dir="${XDG_RUNTIME_DIR:-/tmp}/lf"
 
 # args
-f="$1" # file
+f="$1" # file to preview
 w="$2" # width of preview window
 h="$3" # height of preview window
 x="$4" # x position of preview window
@@ -15,10 +15,10 @@ main()
 {
     [ -z "$1" ] && echo lf previewer script. && exit 1
 
-    mkdir -p "$cachedir"
+    mkdir -p "$cache_dir"
 
-    twoext="$(echo "$f" | tr '[:upper:]' '[:lower:]' | rev | cut -d. -f1-2 | rev)"
-    ext="$(echo "$f" | tr '[:upper:]' '[:lower:]' | rev | cut -d. -f1 | rev)"
+    twoext="$(printf '%s\n' "$f" | tr '[:upper:]' '[:lower:]' | rev | cut -d. -f1-2 | rev)"
+    ext="$(printf '%s\n' "$f" | tr '[:upper:]' '[:lower:]' | rev | cut -d. -f1 | rev)"
 
     case "$twoext" in
         tar.gz|tar.xz|tar.bz|tar.bz2|tar.z|tar.lzo|tar.lz|tar.7z|tar.zst)
@@ -61,7 +61,7 @@ main()
         ;;
 
         pdf)
-            thumbnail="$cachedir/thumbnail.$(uid "$f")"
+            thumbnail="$cache_dir/thumbnail.$(uid "$f")"
             if [ ! -f "$thumbnail.jpg" ]; then
                 run pdftoppm -jpeg -jpegopt quality=50,optimize=y -f 1 -singlefile "$f" "$thumbnail" ||
                     printf "[lfpreviewer]\nfailed generating a preview for this pdf file.\n"
@@ -70,7 +70,7 @@ main()
         ;;
 
         svg)
-            thumbnail="$cachedir/thumbnail.$(uid "$f")"
+            thumbnail="$cache_dir/thumbnail.$(uid "$f")"
             if [ ! -f "$thumbnail.jpg" ]; then
                 run -p imagemagick convert "$f" "$thumbnail.jpg" ||
                     printf "[lfpreviewer]\nfailed generating a preview for this svg file.\n"
@@ -79,7 +79,7 @@ main()
         ;;
 
         epub)
-            thumbnail="$cachedir/thumbnail.$(uid "$f")"
+            thumbnail="$cache_dir/thumbnail.$(uid "$f")"
             if [ ! -f "$thumbnail.png" ]; then
                 run gnome-epub-thumbnailer --size 1024 "$f" "$thumbnail.png" ||
                     printf "[lfpreviewer]\ncouldn't find a cover for this epub.\n"
@@ -88,7 +88,7 @@ main()
         ;;
 
         prc|mobi|azw|azw3|kf8|kfx)
-            thumbnail="$cachedir/thumbnail.$(uid "$f")"
+            thumbnail="$cache_dir/thumbnail.$(uid "$f")"
             if [ ! -f "$thumbnail.png" ]; then
                 run gnome-mobi-thumbnailer --size 1024 "$f" "$thumbnail.png" ||
                     printf "[lfpreviewer]\ncouldn't find a cover for this ebook.\n"
@@ -98,7 +98,7 @@ main()
 
         avi|mp4|wmv|dat|3gp|ogv|mkv|mpg|mpeg|vob|fl[icv]|\
         m2v|mov|webm|ts|mts|m4v|r[am]|qt|divx)
-            thumbnail="$cachedir/thumbnail.$(uid "$f")"
+            thumbnail="$cache_dir/thumbnail.$(uid "$f")"
             if [ ! -f "$thumbnail.jpg" ]; then
                 ffmpegthumbnailer -s0 -q5 -i "$f" -o "$thumbnail.jpg" ||
                     printf "[lfpreviewer]\ncouldn't generate a thumbnail for this video file."
@@ -134,8 +134,8 @@ run()
 uid()
 {
     stat -c '%n%i%F%s%W%Y' -- "$(readlink -f "$f")" | sha256sum | cut -d' ' -f1
-    size="$(du -s "$cachedir" | cut -f1)"
-    [ "$size" -ge 30000 ] && rm -rf "$cachedir"/*
+    size="$(du -s "$cache_dir" | cut -f1)"
+    [ "$size" -ge 30000 ] && rm -rf "$cache_dir"/*
 }
 
 image()
@@ -148,16 +148,10 @@ image()
         return
     fi
 
-    declare -p -A cmd=(\
-        [action]=add \
-        [identifier]="PREVIEW" \
-        [path]="$img" \
-        [x]="$x" \
-        [y]="$y" \
-        [width]="$((w-1))" \
-        [height]="$h" \
-        [scaler]=contain
-    ) > "$FIFO_UEBERZUG"
+    printf '%s%s%s\n' \
+        '{ "action": "add", "identifier": "lfpreview", "scaler": "contain",' \
+          '"path": "'"$img"'", "x": '$x', "y": '$y','  \
+          '"height": '$h', "width": '$((w-1))' }' > "$FIFO_UEBERZUG"
 
     exit 1
 }

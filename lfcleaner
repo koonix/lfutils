@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
-# cleanup ueberzug's image preview.
-[ -z "$FIFO_UEBERZUG" ] && exit 1
-declare -p -A cmd=([action]=remove [identifier]="PREVIEW") > "$FIFO_UEBERZUG"
+#!/bin/sh
+# clear the image displayed by ueberzug.
+[ -n "$FIFO_UEBERZUG" ] &&
+    echo '{"action":"remove","identifier":"lfpreview"}' > "$FIFO_UEBERZUG"
