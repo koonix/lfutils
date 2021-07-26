@@ -52,7 +52,7 @@ main()
         torrent) run -p transmission-cli transmission-show "$f" ;;
         odt|ods|odp|sxw) run odt2txt "$f" ;;
 
-        wav|mp3|flac|m4a|wma|ape|ac3|og[agx]|spx|opus|as[fx]|flac)
+        wav|mp3|flac|m4a|wma|ape|ac3|og[agx]|spx|opus|as[fx])
             run mediainfo "$f"
         ;;
 
@@ -135,7 +135,7 @@ uid()
 {
     stat -c '%n%i%F%s%W%Y' -- "$(readlink -f "$f")" | sha256sum | cut -d' ' -f1
     size="$(du -s "$thumb_dir" | cut -f1)"
-    [ "$size" -ge 30000 ] && rm -rf "$thumb_dir"/*
+    [ "$size" -ge 30000 ] && rm -rf "${thumb_dir:?}"/*
 }
 
 image()
