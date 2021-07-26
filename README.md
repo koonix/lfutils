@@ -79,9 +79,9 @@ mounting is read-only as archivemount's read-write mounting sucks).
 Put this in your lfrc:
 
 ```
-cmd armount        &lfmount $id $f
-cmd armount-passwd &lfmount -p $id $f
-cmd arunmount      &lfmount -u $id
+cmd armount        &lfmount $f
+cmd armount-passwd &lfmount -p $f
+cmd arunmount      &lfmount -u
 
 map [key] armount
 map [key] armount-passwd
@@ -109,7 +109,7 @@ file opener script/program,
 or use it as a standalone command/binding:
 
 ```
-cmd image &lfsxiv $id $f
+cmd image &lfsxiv $f
 map [key] image
 ```
 
@@ -133,7 +133,7 @@ Add to your lfrc:
 
 ```
 set ratios 1:3:2
-cmd toggle-preview &lftpw $id 1:5 1:3:2
+cmd toggle-preview &lftpw 1:5 1:3:2
 map [key] toggle-preview
 ```
 
@@ -145,7 +145,7 @@ initially disabled:
 ```
 set nopreview
 set ratios 1
-cmd toggle-preview &lftpw $id 1 1:2 off
+cmd toggle-preview &lftpw 1 1:2 off
 map [key] toggle-preview
 ```
 
@@ -176,9 +176,7 @@ Useful for using inside push commands, because it's shorter than
 lf -remote "send $id reload".
 
 ```
-lfreload <lf's id>
-  or
-lfreload -f <lf's id>
+lfreload [-f]
 ```
 
 If you give it the -f option, it sends `reload`. otherwise sends `load`.
@@ -187,7 +185,7 @@ Read lf's manual for info on their difference.
 Example in lfrc:
 
 ```
-cmd trash push &trash-put<space>$fx;lfreload<space>$id
+cmd trash push &trash-put<space>$fx;lfreload
 map D trash
 ```
 
