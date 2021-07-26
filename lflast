@@ -1,9 +1,8 @@
 #!/bin/sh
-# print the last directory lf was open in,
-# then remove the lastdir file.
+# print the last directory the latest closed lf instance was in.
 case "$1" in
-    -remote|-doc|-version|-server) exit ;;
+    -remote|-doc|-version|-server|-help) exit ;;
 esac
-ldglobal="${XDG_RUNTIME_DIR:-/tmp}/lf/lastdir"
-cat "$ldglobal" || echo lflast failed. >&2
-rm -f "$ldglobal"
+last_dir="${XDG_RUNTIME_DIR:-/tmp}/lf/lastdir"
+cat "$last_dir" || echo lflast: couldn\'t get last dir. >&2
+rm -f "$last_dir"
