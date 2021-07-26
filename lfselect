@@ -1,5 +1,5 @@
 #!/bin/bash
-# read filenames from stdin/args and selects them in lf.
+# read filenames from stdin/args and select them in lf.
 
 while getopts i: opt; do
     case $opt in
@@ -22,18 +22,16 @@ fi
 cmd=
 count=0
 
-# build command line to select files and send
-# to lf, 15 files at a time.
-# sending all the files at once instead of only 15
-# can crash lf.
+# build command line to select files and send to lf,
+# 10 files at a time (selecting them one at a time is much slower).
+# however, sending more than 10 files at a time might crash lf.
 while IFS= read -r file; do
     ((count++))
     cmd="${cmd}select<space>\"$file\";toggle;"
-    if [ $count -gt 15 ]; then
+    if [ $count -gt 10 ]; then
         lf -remote "send $id push :$cmd<enter>"
-        count=0;
+        count=0
         cmd=
     fi
 done <<< "$(printf "%s\n" "$list" | sed 's/ /<space>/g')"
-
 [ -n "$cmd" ] && lf -remote "send $id push :$cmd<enter>"
