@@ -148,12 +148,12 @@ image()
         return
     fi
 
-    [ -p "$FIFO_UEBERZUG" ] || exit 1
+    [ -p "$PREVIEW_FIFO" ] || exit 1
 
     printf '%s%s%s\n' \
         '{ "action": "add", "identifier": "lfpreview", "scaler": "contain",' \
           '"path": "'"$img"'", "x": '$x', "y": '$y','  \
-          '"height": '$h', "width": '$((w-1))' }' > "$FIFO_UEBERZUG"
+          '"height": '$h', "width": '$((w-1))' }' > "$PREVIEW_FIFO"
 
     exit 1
 }
