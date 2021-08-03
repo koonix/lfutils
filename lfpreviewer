@@ -81,7 +81,7 @@ main()
         psd|xcf)
             thumbnail="$thumb_dir/$(uid "$f")"
             if [ ! -f "$thumbnail.jpg" ]; then
-                run -p imagemagick convert "$f" -flatten "$thumbnail.jpg" ||
+                run -p imagemagick convert "$f" -flatten -resize 1500x "$thumbnail.jpg" ||
                     printf "[lfpreviewer]\nfailed generating a preview for this file.\n"
             fi
             [ -f "$thumbnail.jpg" ] && image "$thumbnail.jpg"
