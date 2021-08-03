@@ -44,7 +44,7 @@ set_preview_on ()
 
 set_preview_off ()
 {
-    head -n1 "$FIFO_UEBERZUG" >/dev/null &
+    head -n1 "$PREVIEW_FIFO" >/dev/null &
     lfcleaner
     lf -remote "send $id push :set<space>nopreview;set<space>ratios<space>$npr<enter>"
     sleep 0.2 && lfcleaner

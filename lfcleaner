@@ -1,4 +1,4 @@
 #!/bin/sh
 # clear the image displayed by ueberzug.
-[ -p "$FIFO_UEBERZUG" ] &&
-    echo '{"action":"remove","identifier":"lfpreview"}' > "$FIFO_UEBERZUG"
+[ -p "$PREVIEW_FIFO" ] &&
+    echo '{"action":"remove","identifier":"lfpreview"}' > "$PREVIEW_FIFO"
