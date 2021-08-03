@@ -15,7 +15,7 @@ main()
 {
     [ -z "$1" ] && echo lf previewer script. && exit 1
 
-    mkdir -p "$thumb_dir" || return 1
+    mkdir -p "$thumb_dir" || exit 1
 
     twoext="$(printf '%s\n' "$f" | tr '[:upper:]' '[:lower:]' | rev | cut -d. -f1-2 | rev)"
     ext="$(printf '%s\n' "$f" | tr '[:upper:]' '[:lower:]' | rev | cut -d. -f1 | rev)"
@@ -79,10 +79,19 @@ main()
         ;;
 
         psd|xcf)
+            if [ "$(du -b "$f" | cut -f1)" -gt 200000000 ]; then
+                printf "[lfpreviewer]\nfile is too big to preview.\n"
+                return
+            fi
             thumbnail="$thumb_dir/$(uid "$f")"
             if [ ! -f "$thumbnail.jpg" ]; then
-                run -p imagemagick convert "$f" -flatten -resize 1500x "$thumbnail.jpg" ||
-                    printf "[lfpreviewer]\nfailed generating a preview for this file.\n"
+                pkill -xf '.*convert.*-flatten -resize.*'
+                run -p imagemagick -c convert timeout -k 5s 60s convert "$f" -flatten -resize 1500x "$thumbnail.jpg"
+                case $? in
+                    0) ;;
+                    124) printf "[lfpreviewer]\ngenerating this preview takes too long.\n" ;;
+                    *) printf "[lfpreviewer]\nfailed generating a preview for this file.\n"; exit 1 ;;
+                esac
             fi
             [ -f "$thumbnail.jpg" ] && image "$thumbnail.jpg"
         ;;
@@ -127,7 +136,7 @@ main()
 run()
 {
     [ "$1" = -p ] && pkg=$2 && shift 2
-    cmd=$1
+    [ "$1" = -c ] && cmd=$2 && shift 2 || cmd=$1
     [ -z "$pkg" ] && pkg=$cmd
     if ! command -v $cmd >/dev/null; then
         echo '[lfpreviewer]'
@@ -144,7 +153,7 @@ uid()
 {
     stat -c '%n%i%F%s%W%Y' -- "$(readlink -f "$f")" | sha256sum | cut -d' ' -f1
     size="$(du -s "$thumb_dir" | cut -f1)"
-    [ "$size" -ge 30000 ] && rm -rf "${thumb_dir:?}"/*
+    [ "$size" -ge 40000 ] && rm -rf "${thumb_dir:?}"/*
 }
 
 image()
@@ -176,3 +185,4 @@ list_archive()
 }
 
 main "$@"
+exit 0
