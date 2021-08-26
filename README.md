@@ -9,7 +9,6 @@ Useful scripts for the lf file manager.
   * [lfmount](#lfmount)
   * [lftpw](#lftpw)
   * [lfselect](#lfselect)
-  * [lfreload](#lfreload)
 * [Environment Variables](#environment-variables)
   * [LF_BAT_OPTS](#lf_bat_opts)
 * [Dependencies](#dependencies)
@@ -146,29 +145,6 @@ Or you can give it as the second argument:
 ```
 lfselect <lf's id> "$(printf '%s\n' *.jpg)"
 ```
-
-## lfreload
-
-Reload files and directories. just sends the load/reload command to lf.
-Useful for using inside push commands, because it's shorter than
-lf -remote "send $id reload".
-
-```
-lfreload [-f]
-```
-
-If you give it the -f option, it sends `reload`. otherwise sends `load`.
-Read lf's manual for info on their difference.
-
-Example in lfrc:
-
-```
-cmd trash push &trash-put<space>$fx;lfreload
-map D trash
-```
-
-With this command, you will have to press enter before the
-command is run, which acts as a kind of confirmation.
 
 ## Environment Variables
 
