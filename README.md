@@ -7,13 +7,11 @@ Useful scripts for the lf file manager.
   * [lfrun, lflast](#lfrun-lflast)
   * [lfpreviewer, lfcleaner](#lfpreviewer-lfcleaner)
   * [lfmount](#lfmount)
-  * [lfsxiv](#lfsxiv)
   * [lftpw](#lftpw)
   * [lfselect](#lfselect)
   * [lfreload](#lfreload)
 * [Environment Variables](#environment-variables)
   * [LF_BAT_OPTS](#lf_bat_opts)
-  * [LF_IMG_REGEX](#lf_img_regex)
 * [Dependencies](#dependencies)
 
 Please take a look at the [dependencies](#dependencies)
@@ -98,25 +96,6 @@ you for a password.
 While inside the mounted archive, use `arunmount` to unmount the archive
 and jump back to where you were before mouting.
 
-## lfsxiv
-
-- Open all the images in the directory of the image
-- Images that you select in sxiv, will also get selected in lf
-(selection happens upon exiting sxiv).
-
-To use lfsxiv, use it to open images in lf's `open` command or your
-file opener script/program,
-or use it as a standalone command/binding:
-
-```
-cmd image &lfsxiv $f
-map [key] image
-```
-
-Also see the [LF_IMG_REGEX](#lf_img_regex) section for
-configuring the types of images that your build of sxiv
-supports.
-
 ## lftpw
 
 Toggle lf's preview pane while readjusting ratios.
@@ -151,8 +130,7 @@ map [key] toggle-preview
 
 ## lfselect
 
-Select multiple files remotely in lf. this util is used
-by lfsxiv to select sxiv's selected images in lf.
+Select multiple files remotely in lf.
 
 If only one file is given, lfselect will just put
 the cursor over it instead of selecting it.
@@ -210,18 +188,6 @@ export BAT_THEME='gruvbox-dark'
 export LF_BAT_OPTS='-f'
 ```
 
-## LF_IMG_REGEX
-
-lfsxiv only passes files with a certain extention to sxiv,
-because sxiv only opens images with a recognizable extention,
-which is dependent on your build of sxiv.
-
-By default, the regex that matches valid image file's names
-is `.*\.(jpe?g|png|gif|bmp|ico)$`,
-which matches image types that a regular build of sxiv supports.
-
-However you can change this by setting the `LF_IMG_REGEX` environment variable.
-
 ## Dependencies
 
 The only hard dependency of lfutils is lf.
@@ -234,7 +200,7 @@ as they're pretty small, and you'll probably need most of them,
 if not all.
 
 Archlinux users can install all of these dependencies
-(except for sxiv, binutils and transmission-cli)
+(except for binutils and transmission-cli)
 by installing the AUR package `lfutils-meta`:
 
 ```
@@ -246,7 +212,6 @@ paru -S lfutils-meta
 - **[chafa](https://github.com/hpjansson/chafa)**: Previewing images outside of a graphical environment
 - **[ffmpegthumbnailer](https://github.com/dirkvdb/ffmpegthumbnailer)**: Previewing video thumbnails
 - **[bat](https://github.com/sharkdp/bat)**: Previewing plain text and code
-- **[sxiv](https://github.com/muennich/sxiv)**: sxiv integration using lfsxiv
 - **atool**: Previewing archive contents (install [atool-git](https://github.com/solsticedhiver/atool)([aur](https://aur.archlinux.org/packages/atool-git)) for zstd support)
 - **mediainfo**: Previewing info about music/media files
 - **odt2txt**: Previewing OpenDocument files
