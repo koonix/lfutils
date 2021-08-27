@@ -63,7 +63,7 @@ main()
         pdf)
             thumbnail="$thumb_dir/$(uid "$f")"
             if [ ! -f "$thumbnail.jpg" ]; then
-                run pdftoppm -jpeg -jpegopt quality=50,optimize=y -f 1 -singlefile "$f" "$thumbnail" ||
+                run -p poppler pdftoppm -jpeg -jpegopt quality=50,optimize=y -f 1 -singlefile "$f" "$thumbnail" ||
                     printf "[lfpreviewer]\nfailed generating a preview for this pdf file.\n"
             fi
             [ -f "$thumbnail.jpg" ] && image "$thumbnail.jpg"
