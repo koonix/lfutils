@@ -3,6 +3,6 @@
 case "$1" in
     -remote|-doc|-version|-server|-help) exit ;;
 esac
-last_dir="${XDG_RUNTIME_DIR:-/tmp}/lf/lastdir"
-cat "$last_dir" || echo lflast: couldn\'t get last dir. >&2
-rm -f "$last_dir"
+lastdir_file="${XDG_RUNTIME_DIR:-/tmp}/lf/lastdir"
+cat "$lastdir_file" || echo lflast: couldn\'t get last dir. >&2
+rm -f "$lastdir_file"
