@@ -79,7 +79,7 @@ main()
         ;;
 
         psd|xcf)
-            if [ "$(du -b "$f" | cut -f1)" -gt 200000000 ]; then
+            if [ "$(du -b "$f" | cut -f1)" -gt 50000000 ]; then
                 printf "[lfpreviewer]\nfile is too big to preview.\n"
                 return
             fi
