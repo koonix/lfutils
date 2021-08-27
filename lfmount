@@ -1,6 +1,6 @@
 #!/bin/sh
 # mount archives from lf. requires archivemount.
-# usage: $ lfmount ARCHIVE_FILE
+# usage: $ lfmount [-p] ARCHIVE_FILE
 
 while getopts i:up opt; do
     case $opt in
@@ -11,15 +11,20 @@ while getopts i:up opt; do
 done
 shift $((OPTIND-1))
 
-mnt="${XDG_RUNTIME_DIR:-/tmp}/lf/mount/$(basename -- "$1")-$(mktemp -u XXXXXX)"
-mkdir -p "$mnt"
-output="$(archivemount -o readonly $password_arg "$ar" "$mnt" 2>&1)"
+mnt="$1.$(mktemp -u XXXXXX).ArchiveMount"
+mkdir -p "$mnt" || {
+    lf -remote "send $id echo failed creating the mountpoint here."
+    exit 1
+}
+
+output="$(archivemount -o readonly $pass "$1" "$mnt" 2>&1)"
 if [ "$(ls -A "$mnt" | wc -l)" -le 0 ]; then
     fusermount -u "$mnt"
     rm -rf "$mnt"
     lf -remote "send $id echo mount failed: $output"
     exit 1
 fi
+
 lfselect "$mnt"
 lf -remote "send $id open"
 lf -remote "send $id reload"
