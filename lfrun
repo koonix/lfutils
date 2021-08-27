@@ -3,8 +3,10 @@
 
 # config
 tmp="${XDG_RUNTIME_DIR:-/tmp}/lf"
-export PREVIEW_FIFO="$tmp/fifo-$$"
-export PREVIEW_STATE="$tmp/tpw-$$"
+export PREVIEW_STATE="$tmp/$$/preview-state"
+export PREVIEW_FIFO="$tmp/$$/preview-fifo"
+export PREVIEW_PID="$tmp/$$/preview-pid"
+export SHELL_FIFO="$tmp/$$/shell-fifo"
 
 main ()
 {
@@ -15,35 +17,25 @@ main ()
         ;;
     esac
 
-    trap cleanup EXIT
-    mkdir -p "$tmp"
+    trap 'rm -rf "$tmp/$$"; pkill -P $$' EXIT
+    rm -rf "$tmp/$$"
+    mkdir -p "$tmp/$$"
     ueberzug_init
     lf -last-dir-path="$tmp/lastdir" "$@"
 }
 
 ueberzug_init ()
 {
-    is_in_graphical_env || return 1
+    [ -z "$DISPLAY" ] && return 1
     command -v ueberzug >/dev/null || return 1
 
     mkfifo "$PREVIEW_FIFO" || return 1
+    mkfifo "$SHELL_FIFO" || return 1
 
-    sleep 1000000000 > "$PREVIEW_FIFO" &
-    sleep_pid=$!
+    sleep inf > "$PREVIEW_FIFO" &
+    sleep inf > "$SHELL_FIFO" &
 
-    ueberzug layer -s < "$PREVIEW_FIFO" &
-}
-
-cleanup ()
-{
-    [ -n "$sleep_pid" ] && kill $sleep_pid
-    rm -f "$PREVIEW_FIFO" "$PREVIEW_STATE"
-}
-
-is_in_graphical_env ()
-{
-    [ -n "$DISPLAY" ] && [ -z "$SSH_CLIENT" ] && [ -z "$SSH_TTY" ] && return 0
-    return 1
+    sh < "$SHELL_FIFO" &
 }
 
 main "$@"
