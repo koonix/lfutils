@@ -7,7 +7,6 @@ Useful scripts for the lf file manager.
   * [lfrun, lflast](#lfrun-lflast)
   * [lfpreviewer, lfcleaner](#lfpreviewer-lfcleaner)
   * [lfmount](#lfmount)
-  * [lftpw](#lftpw)
   * [lfselect](#lfselect)
 * [Environment Variables](#environment-variables)
   * [LF_BAT_OPTS](#lf_bat_opts)
@@ -94,38 +93,6 @@ you for a password.
 
 While inside the mounted archive, use `arunmount` to unmount the archive
 and jump back to where you were before mouting.
-
-## lftpw
-
-Toggle lf's preview pane while readjusting ratios.
-Makes lf's preview toggling look like ranger's.
-
-lftpw requires three arguments, and an optional fourth:
-
-1. lf's id
-2. pane ratios when preview is disabled
-3. pane ratios when preview is enabled
-4. [optional] lf's initial preview status [possible values: on (default), off]
-
-Add to your lfrc:
-
-```
-set ratios 1:3:2
-cmd toggle-preview &lftpw 1:5 1:3:2
-map [key] toggle-preview
-```
-
-Change the ratios to your liking.
-
-I recommend using lftpw with previews and panes
-initially disabled:
-
-```
-set nopreview
-set ratios 1
-cmd toggle-preview &lftpw 1 1:2 off
-map [key] toggle-preview
-```
 
 ## lfselect
 
