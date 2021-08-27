@@ -69,30 +69,14 @@ text file preview settings.
 
 ## lfmount
 
-Allows you to open archive files' contents in lf, using `archivemount` (archive
-mounting is read-only as archivemount's read-write mounting sucks).
+Mount and open archives. Archives are mounted read-only because
+archivemount's read-write mounting sucks.
 
 Put this in your lfrc:
 
 ```
-cmd armount        &lfmount $f
-cmd armount-passwd &lfmount -p $f
-cmd arunmount      &lfmount -u
-
-map [key] armount
-map [key] armount-passwd
-map [key] arunmount
+map [key] &lfmount $f
 ```
-
-`armount` mounts the archive and jumps to the mountpoint.
-
-Archivemount can't tell wether an archive is password-protected;
-Therefore the `armount` command returns an error when trying to mount
-such archives. So you can use `armount-passwd` which will prompt
-you for a password.
-
-While inside the mounted archive, use `arunmount` to unmount the archive
-and jump back to where you were before mouting.
 
 ## lfselect
 
@@ -101,16 +85,12 @@ Select multiple files remotely in lf.
 If only one file is given, lfselect will just put
 the cursor over it instead of selecting it.
 
-You can supply list of files from stdin:
+The list of files to select can be supplied from
+stdin or as the first argument.
 
 ```
-printf '%s\n' *.jpg | lfselect <lf's id>
-```
-
-Or you can give it as the second argument:
-
-```
-lfselect <lf's id> "$(printf '%s\n' *.jpg)"
+printf '%s\n' *.jpg | lfselect [-i <lf's id>]
+lfselect [-i <lf's id>] "$(printf '%s\n' *.jpg)"
 ```
 
 ## Environment Variables
