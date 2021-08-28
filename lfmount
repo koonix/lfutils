@@ -11,7 +11,7 @@ mkdir -p "$mnt" || {
     exit 1
 }
 
-output="$(archivemount -o readonly $pass "$1" "$mnt" 2>&1)"
+output="$(archivemount -o readonly ${pass:+-o password} "$1" "$mnt" 2>&1)"
 if [ "$(ls -A "$mnt" | wc -l)" -le 0 ]; then
     fusermount -u "$mnt"
     rm -rf "$mnt"
