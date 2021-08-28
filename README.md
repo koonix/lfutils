@@ -80,17 +80,13 @@ map [key] &lfmount $f
 
 ## lfselect
 
-Select multiple files remotely in lf.
+Reads file names from stdin and selects them in lf.
 
-If only one file is given, lfselect will just put
-the cursor over it instead of selecting it.
-
-The list of files to select can be supplied from
-stdin or as the first argument.
+Examples:
 
 ```
+sxiv -ao | lfselect [-i <lf's id>]
 printf '%s\n' *.jpg | lfselect [-i <lf's id>]
-lfselect [-i <lf's id>] "$(printf '%s\n' *.jpg)"
 ```
 
 ## Environment Variables
