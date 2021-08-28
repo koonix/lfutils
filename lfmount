@@ -2,15 +2,8 @@
 # mount archives from lf. requires archivemount.
 # usage: $ lfmount [-p] ARCHIVE_FILE
 
-while getopts i:up opt; do
-    case $opt in
-        i) export id="$OPTARG" ;;
-        p) pass='-o password' ;;
-        ?) exit 1 ;;
-    esac
-done
-shift $((OPTIND-1))
-[ -z "$id" ] && lf\'s id is not given. >&2 && exit 1
+# check $id
+[ -z "$id" ] && echo lf\'s id is not given. >&2 && exit 1
 
 mnt="$1.$(mktemp -u XXXXXX).ArchiveMount"
 mkdir -p "$mnt" || {

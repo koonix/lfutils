@@ -1,13 +1,7 @@
 #!/bin/sh
 # read filenames from stdin/args and select them in lf.
 
-while getopts i: opt; do
-    case $opt in
-        i) export id="$OPTARG" ;;
-        ?) exit 1 ;;
-    esac
-done
-shift $((OPTIND-1))
+# check $id
 [ -z "$id" ] && echo lf\'s id is not given. >&2 && exit 1
 
 sed 's/"/\\"/g' | while IFS= read -r file; do
