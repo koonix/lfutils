@@ -5,6 +5,8 @@
 [ -z "$id" ] && echo lf\'s id is not given. >&2 && exit 1
 
 sed 's/"/\\"/g' | while IFS= read -r file; do
-    [ -n "$file" ] && lf -remote "send $id select \"$file\"
-send $id toggle"
-done
+    [ -z "$file" ] && continue
+    lf -remote "send $id select \"$file\"
+                send $id toggle" >&2
+    echo
+done | wc -l | grep -qx 1 && lf -remote "send $id toggle" ||:
