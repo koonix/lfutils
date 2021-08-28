@@ -26,6 +26,5 @@ if [ "$(ls -A "$mnt" | wc -l)" -le 0 ]; then
     exit 1
 fi
 
-lfselect "$mnt"
-lf -remote "send $id open"
-lf -remote "send $id reload"
+mnt="$(printf '%s\n' "$mnt" | sed 's/"/\\"/g')"
+lf -remote "send $id cd \"$mnt\""
