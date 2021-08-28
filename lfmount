@@ -10,6 +10,7 @@ while getopts i:up opt; do
     esac
 done
 shift $((OPTIND-1))
+[ -z "$id" ] && lf\'s id is not given. >&2 && exit 1
 
 mnt="$1.$(mktemp -u XXXXXX).ArchiveMount"
 mkdir -p "$mnt" || {
