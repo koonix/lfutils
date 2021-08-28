@@ -6,7 +6,7 @@
 
 sed 's/"/\\"/g' | while IFS= read -r file; do
     [ -z "$file" ] && continue
-    lf -remote "send $id select \"$file\"
-                send $id toggle" >&2
+    lf -remote "send $id select \"$file\"" >&2
+    lf -remote "send $id toggle" >&2
     echo
 done | wc -l | grep -qx 1 && lf -remote "send $id toggle" ||:
