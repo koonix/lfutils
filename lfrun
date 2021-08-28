@@ -8,7 +8,7 @@ export PREVIEW_FIFO="$tmp/$$/preview-fifo"
 export PREVIEW_PID="$tmp/$$/preview-pid"
 export SHELL_FIFO="$tmp/$$/shell-fifo"
 
-main ()
+main()
 {
     case "$1" in
         -remote|-doc|-version|-server|-help)
@@ -24,7 +24,7 @@ main ()
     lf -last-dir-path="$tmp/lastdir" "$@"
 }
 
-ueberzug_init ()
+ueberzug_init()
 {
     [ -z "$DISPLAY" ] && return 1
     command -v ueberzug >/dev/null || return 1
@@ -39,4 +39,3 @@ ueberzug_init ()
 }
 
 main "$@"
-exit
