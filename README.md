@@ -72,6 +72,8 @@ text file preview settings.
 Mount and open archives. Archives are mounted read-only because
 archivemount's read-write mounting sucks.
 
+If the `pass` environment variable is set, lfmount asks for a password.
+
 Put this in your lfrc:
 
 ```
@@ -81,12 +83,13 @@ map [key] &lfmount $f
 ## lfselect
 
 Reads file names from stdin and selects them in lf.
+If only one file is given, it only puts the cursor over the file.
 
 Examples:
 
 ```
-sxiv -ao | lfselect [-i <lf's id>]
-printf '%s\n' *.jpg | lfselect [-i <lf's id>]
+sxiv -ao | lfselect
+printf '%s\n' *.jpg | lfselect
 ```
 
 ## Environment Variables
