@@ -161,29 +161,21 @@ image()
     img="$1"
     [ -n "$w" ] || [ -n "$h" ] || exit 1
 
-    if [ -z "$DISPLAY" ] || ! command -v ueberzug >/dev/null; then
+    if [ -z "$DISPLAY" ] || ! command -v ueberzug >/dev/null || [ ! -p "$FIFO" ]; then
         run chafa -s ${w}x${h} "$img"
         return
     fi
 
-    [ ! -p "$SHELL_FIFO" ] || [ ! -p "$PREVIEW_FIFO" ] && exit 1
-
     # if ueberzug isn't running, start it.
-    ! is_ueberzug_running &&
-        echo "ueberzug layer -s < '$PREVIEW_FIFO' & echo \$! > '$PREVIEW_PID'" > "$SHELL_FIFO"
+    ! pgrep -xs0 ueberzug >/dev/null &&
+        echo 'ueberzug layer -s' > "$FIFO" && sleep 0.5
 
     printf '%s%s%s\n' \
         '{ "action": "add", "identifier": "lfpreview", "scaler": "contain",' \
           '"path": "'"$img"'", "x": '$x', "y": '$y','  \
-          '"height": '$h', "width": '$((w-1))' }' > "$PREVIEW_FIFO"
+          '"height": '$h', "width": '$((w-1))' }' > "$FIFO"
 
     exit 1
-}
-
-is_ueberzug_running()
-{
-    [ -r "$PREVIEW_PID" ] &&
-        sed -nz '3q1;/\/ueberzug/q0' "/proc/$(cat "$PREVIEW_PID")/cmdline" 2>/dev/null
 }
 
 list_archive()
