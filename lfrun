@@ -14,7 +14,7 @@ main()
         ;;
     esac
 
-    mkdir -p "$tmp"
+    mkdir -pm700 "$tmp"
     preview_init
     lf -last-dir-path="$tmp/lastdir" "$@"
 }
@@ -27,7 +27,7 @@ preview_init()
     (
         setup() {
             rm -f "$FIFO"
-            mkfifo "$FIFO" || return 1
+            mkfifo -m600 "$FIFO" || return 1
             sleep inf > "$FIFO" &
             ueberzug layer -s < "$FIFO"
         }

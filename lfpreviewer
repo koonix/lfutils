@@ -15,7 +15,7 @@ main()
 {
     [ -z "$1" ] && echo lf previewer script. && exit 1
 
-    mkdir -p "$thumb_dir" || exit 1
+    mkdir -pm700 "$thumb_dir" || exit 1
 
     twoext="$(printf '%s\n' "$f" | tr '[:upper:]' '[:lower:]' | rev | cut -d. -f1-2 | rev)"
     ext="$(printf '%s\n' "$f" | tr '[:upper:]' '[:lower:]' | rev | cut -d. -f1 | rev)"
