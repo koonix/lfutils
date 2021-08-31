@@ -159,13 +159,10 @@ image()
     img="$1"
     [ -n "$w" ] || [ -n "$h" ] || exit 1
 
-    if [ -z "$DISPLAY" ] || ! command -v ueberzug >/dev/null; then
+    if [ -z "$DISPLAY" ] || [ ! -p "$FIFO" ]; then
         run chafa -s ${w}x${h} "$img"
         return
     fi
-
-    # if ueberzug isn't running, start it.
-    ! pgrep -xg0 ueberzug >/dev/null && kill -USR1 "$SHPID" && sleep 0.2
 
     printf '%s%s%s\n' \
         '{ "action": "add", "identifier": "lfpreview", "scaler": "contain",' \

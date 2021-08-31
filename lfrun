@@ -16,32 +16,18 @@ main()
 
 preview_init()
 {
-    [ -z "$DISPLAY" ] && return 1
-    command -v ueberzug >/dev/null || return 1
-
-    mkdir -pm700 "$tmp" || return 1
+    [ -z "$DISPLAY" ] || ! command -v ueberzug >/dev/null && return 1
+    mkfifo -m600 "$FIFO" || return 1
     trap cleanup EXIT
-    (
-        setup() {
-            rm -f "$FIFO"
-            mkfifo -m600 "$FIFO" || return 1
-            sleep inf > "$FIFO" &
-            ueberzug layer -s < "$FIFO"
-        }
-        trap setup USR1
-        while true; do
-            sleep inf &
-            wait
-            kill $!
-        done
-    ) &
-    export SHPID=$!
+    sleep inf > "$FIFO" &
+    pid=$!
+    ueberzug layer -s < "$FIFO" &
 }
 
 cleanup()
 {
     rm -f "$FIFO"
-    pkill -g0
+    kill $pid
 }
 
 main "$@"
