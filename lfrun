@@ -32,6 +32,7 @@ preview_init()
         while true; do
             sleep inf &
             wait
+            kill $!
         done
     ) &
     export SHPID=$!
