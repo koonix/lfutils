@@ -23,12 +23,27 @@ preview_init()
 {
     [ -z "$DISPLAY" ] && return 1
     command -v ueberzug >/dev/null || return 1
+    trap cleanup EXIT
+    (
+        setup() {
+            rm -f "$FIFO"
+            mkfifo "$FIFO" || return 1
+            sleep inf > "$FIFO" &
+            ueberzug layer -s < "$FIFO"
+        }
+        trap setup USR1
+        while true; do
+            sleep inf &
+            wait
+        done
+    ) &
+    export SHPID=$!
+}
 
-    trap 'rm -f "$FIFO"; pkill -P $$' EXIT
+cleanup()
+{
     rm -f "$FIFO"
-    mkfifo "$FIFO" || return 1
-    sleep inf > "$FIFO" &
-    sh < "$FIFO" &
+    pkill -g0
 }
 
 main "$@"

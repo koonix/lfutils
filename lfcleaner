@@ -1,4 +1,4 @@
 #!/bin/sh
 # clear the image displayed by ueberzug.
-[ -p "$FIFO" ] && pgrep -xs0 ueberzug >/dev/null &&
+[ -p "$FIFO" ] && pgrep -xg0 ueberzug >/dev/null &&
     echo '{"action":"remove","identifier":"lfpreview"}' > "$FIFO"
