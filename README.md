@@ -4,7 +4,7 @@ Useful scripts for the lf file manager.
 
 * [Installation](#installation)
 * [Utilities](#utilities)
-  * [lfrun, lflast](#lfrun-lflast)
+  * [lfrun](#lfrun)
   * [lfpreviewer, lfcleaner](#lfpreviewer-lfcleaner)
   * [lfmount](#lfmount)
   * [lfselect](#lfselect)
@@ -35,21 +35,10 @@ Or just copy the scripts to a directory that's in yout PATH.
 
 ## Utilities
 
-## lfrun, lflast
+## lfrun
 
 `lfrun` is a wrapper script for running lf, which
-initializes lflast and ueberzug for image previews.
-
-`lflast` prints the last directory the last instance of lf was in.
-
-Put this in your .bashrc or .zshrc:
-
-```
-lf() {
-    lfrun "$@"
-    cd "$(lflast "$@")"
-}
-```
+initializes ueberzug for image previews.
 
 ## lfpreviewer, lfcleaner
 

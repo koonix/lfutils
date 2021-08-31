@@ -1,8 +1,0 @@
-#!/bin/sh
-# print the last directory the latest closed lf instance was in.
-case "$1" in
-    -remote|-doc|-version|-server|-help) exit ;;
-esac
-lastdir_file="${XDG_RUNTIME_DIR:-/tmp}/lf/lastdir"
-cat "$lastdir_file" || echo lflast: couldn\'t get last dir. >&2
-rm -f "$lastdir_file"

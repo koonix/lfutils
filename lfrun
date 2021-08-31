@@ -1,5 +1,5 @@
 #!/bin/sh
-# run lf with support for ueberzug image previews and lflast.
+# run lf with support for ueberzug image previews.
 
 # config
 tmp="${XDG_RUNTIME_DIR:-/tmp}/lf"
@@ -8,21 +8,18 @@ export FIFO="$tmp/fifo-$$"
 main()
 {
     case "$1" in
-        -remote|-doc|-version|-server|-help)
-            lf "$@"
-            return
-        ;;
+        -remote|-doc|-version|-server|-help) lf "$@"; return ;;
     esac
-
-    mkdir -pm700 "$tmp"
     preview_init
-    lf -last-dir-path="$tmp/lastdir" "$@"
+    lf "$@"
 }
 
 preview_init()
 {
     [ -z "$DISPLAY" ] && return 1
     command -v ueberzug >/dev/null || return 1
+
+    mkdir -pm700 "$tmp" || return 1
     trap cleanup EXIT
     (
         setup() {
