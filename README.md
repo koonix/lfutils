@@ -40,7 +40,7 @@ Or just copy the scripts to a directory that's in yout PATH.
 `lfrun` is a wrapper script for running lf, which
 initializes lflast and ueberzug for image previews.
 
-`lflast` prints the last directory the last instance lf was in.
+`lflast` prints the last directory the last instance of lf was in.
 
 Put this in your .bashrc or .zshrc:
 
@@ -60,7 +60,6 @@ Add these lines to your lfrc:
 ```
 set previewer lfpreviewer
 set cleaner lfcleaner
-set ratios 1:1
 set preview
 ```
 
@@ -100,10 +99,10 @@ lfpreviewer uses [bat](https://github.com/sharkdp/bat)
 for text file previews, called with the options `-pf --number`, which enables
 colorization and line numbers.
 
-But if you would like to pass different options to bat,
-you can put them in the `LF_BAT_OPTS` environment variable.
+However, you can specify your own bat options by setting the `LF_BAT_OPTS`
+environment variable.
 
-Example line to put in `~/.bash_profile` or `~/.zprofile`:
+Example for `~/.bash_profile` or `~/.zprofile`:
 
 ```
 export BAT_THEME='gruvbox-dark'
