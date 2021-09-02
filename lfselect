@@ -9,4 +9,4 @@ sed 's/"/\\"/g' | while IFS= read -r file; do
     lf -remote "send $id select \"$file\"" >&2
     lf -remote "send $id toggle" >&2
     echo
-done | wc -l | grep -qx 1 && lf -remote "send $id toggle" ||:
+done | wc -l | grep -qx 1 && sleep 0.2 && lf -remote "send $id toggle" ||:
