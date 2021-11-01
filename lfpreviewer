@@ -117,7 +117,7 @@ main()
         m2v|mov|webm|ts|mts|m4v|r[am]|qt|divx)
             thumbnail="$dir/$(uid "$f")"
             if [ ! -f "$thumbnail.jpg" ]; then
-                ffmpegthumbnailer -s0 -q5 -i "$f" -o "$thumbnail.jpg" ||
+                ffmpegthumbnailer -m -s0 -q5 -i "$f" -o "$thumbnail.jpg" ||
                     printf "[lfpreviewer]\ncouldn't generate a thumbnail for this video file."
             fi
             [ -f "$thumbnail.jpg" ] && image "$thumbnail.jpg"
