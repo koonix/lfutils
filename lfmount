@@ -5,7 +5,7 @@
 # check $id
 [ -z "$id" ] && echo lf\'s id is not given. >&2 && exit 1
 
-mktemp -d "$1.XXXXXX.ArchiveMount" || {
+mnt="$(mktemp -d "$1.XXXXXX.ArchiveMount")" || {
     lf -remote "send $id echo failed creating the mountpoint here."
     exit 1
 }
