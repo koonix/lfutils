@@ -1,5 +1,5 @@
 #!/bin/bash
-# read filenames from stdin/args and select them in lf.
+# read filenames from stdin and select them in lf.
 IFS=$'\n'
 set -- $(cat)
 set -- "${@//\"/'\"'}"
