@@ -55,7 +55,7 @@ main()
             run mediainfo "$f"
         ;;
 
-        bmp|gif|jpg|jpeg|jpe|png|xpm|webp|dng)
+        bmp|gif|jpg|jpeg|jfif|jpe|png|xpm|webp|dng|tif)
             image "$f"
         ;;
 
