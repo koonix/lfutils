@@ -1,4 +1,4 @@
-# lfutils
+# lfutils [Unmaintained 💀]
 
 Useful scripts for the lf file manager.
 
