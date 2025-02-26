@@ -159,7 +159,7 @@ image()
     [ -n "$w" ] || [ -n "$h" ] || exit 1
 
     if [ -z "$DISPLAY" ] || [ ! -p "$FIFO" ]; then
-        run chafa -s ${w}x${h} "$img"
+        run chafa --polite on -s ${w}x${h} "$img"
         return
     fi
 
